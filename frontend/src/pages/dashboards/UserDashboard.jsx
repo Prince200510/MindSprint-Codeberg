@@ -1,0 +1,367 @@
+import { useState, useEffect } from 'react'
+import { Layout } from '../../components/Layout.jsx'
+import { Card } from '../../components/Card.jsx'
+import { Button } from '../../components/Button.jsx'
+import { Modal } from '../../components/Modal.jsx'
+import { Input } from '../../components/Input.jsx'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut} from 'lucide-react'
+import { useAuth } from '../../context/AuthContext.jsx'
+
+export const UserDashboard = () => {
+  const { user, logout } = useAuth()
+  const [patientData, setPatientData] = useState(null)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false)
+  const [editingCondition, setEditingCondition] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const nav = [
+    {to:'/dashboard/user', label:'Overview'},
+    {to:'/dashboard/user/prescriptions', label:'Prescriptions'},
+    {to:'/dashboard/user/medicines', label:'Medicines'},
+    {to:'/dashboard/user/schedule', label:'Schedule'},
+    {to:'/dashboard/user/analytics', label:'Analytics'},
+    {to:'/dashboard/user/chat', label:'Chat'}
+  ]
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('/api/auth/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setPatientData(data.user)
+          console.log('Patient data:', data.user) 
+        }
+      } catch (error) {
+        if (user) {
+          setPatientData(user)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (user) {
+      fetchPatientData()
+    }
+  }, [user])
+
+  const handleRemoveCondition = async (conditionToRemove) => {
+    try {
+      const token = localStorage.getItem('token')
+      const updatedConditions = patientData.profile.medicalHistory.conditions.filter(
+        condition => condition !== conditionToRemove
+      )
+
+      const response = await fetch('/api/auth/update-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          'profile.medicalHistory.conditions': updatedConditions
+        })
+      })
+
+      if (response.ok) {
+        setPatientData(prev => ({
+          ...prev,
+          profile: {
+            ...prev.profile,
+            medicalHistory: {
+              ...prev.profile.medicalHistory,
+              conditions: updatedConditions
+            }
+          }
+        }))
+      }
+    } catch (error) {
+      console.error('Error removing condition:', error)
+    }
+  }
+
+  const handleBookAppointment = () => {
+    setShowAppointmentModal(true)
+  }
+
+  if (loading) {
+    return (
+      <Layout items={nav}>
+        <div className="flex items-center justify-center h-64">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+          />
+        </div>
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout items={nav}>
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                {(patientData?.name || user?.name)?.charAt(0).toUpperCase() || 'P'}
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
+                  {patientData?.profile?.firstName && patientData?.profile?.lastName 
+                    ? `${patientData.profile.firstName} ${patientData.profile.lastName}`
+                    : patientData?.name || user?.name || 'Patient'
+                  }
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400">
+                  {patientData?.email || user?.email || 'Patient Dashboard'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Button onClick={handleBookAppointment} className="bg-green-500 hover:bg-green-600">
+                <Calendar className="w-4 h-4 mr-2" />
+                Book Appointment
+              </Button>
+              <Button 
+                onClick={logout}
+                variant="outline"
+                className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center space-x-3">
+              <User className="w-5 h-5 text-blue-500" />
+              <div>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Age</p>
+                <p className="font-medium text-slate-800 dark:text-white">
+                  {patientData?.profile?.dateOfBirth 
+                    ? Math.floor((new Date() - new Date(patientData.profile.dateOfBirth)) / (365.25 * 24 * 60 * 60 * 1000))
+                    : 'Not specified'
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Phone className="w-5 h-5 text-green-500" />
+              <div>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Mobile</p>
+                <p className="font-medium text-slate-800 dark:text-white">
+                  {patientData?.mobile || user?.mobile || 'Not provided'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <MapPin className="w-5 h-5 text-red-500" />
+              <div>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Location</p>
+                <p className="font-medium text-slate-800 dark:text-white">
+                  {patientData?.profile?.city || 'Not specified'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-4 gap-6">
+          <Card className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-red-200 dark:border-red-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-red-600 dark:text-red-400">Conditions</h3>
+                <p className="text-2xl font-bold text-red-700 dark:text-red-300">
+                  {patientData?.profile?.medicalHistory?.conditions?.length || 0}
+                </p>
+              </div>
+              <Heart className="w-8 h-8 text-red-500" />
+            </div>
+          </Card>
+          <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Allergies</h3>
+                <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+                  {patientData?.profile?.medicalHistory?.allergies?.length || 0}
+                </p>
+              </div>
+              <AlertTriangle className="w-8 h-8 text-yellow-500" />
+            </div>
+          </Card>
+          <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-blue-600 dark:text-blue-400">Medications</h3>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                  {patientData?.profile?.medicalHistory?.currentMedications?.length || 0}
+                </p>
+              </div>
+              <Pill className="w-8 h-8 text-blue-500" />
+            </div>
+          </Card>
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-green-600 dark:text-green-400">Next Dose</h3>
+                <p className="text-lg font-bold text-green-700 dark:text-green-300">
+                  7:00 AM
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400">Vitamin D</p>
+              </div>
+              <Clock className="w-8 h-8 text-green-500" />
+            </div>
+          </Card>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center">
+                <Heart className="w-5 h-5 mr-2 text-red-500" />
+                Medical Conditions
+              </h3>
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                {patientData?.profile?.medicalHistory?.conditions?.length || 0} conditions
+              </span>
+            </div>
+            <div className="space-y-2">
+              {patientData?.profile?.medicalHistory?.conditions?.length > 0 ? (
+                patientData.profile.medicalHistory.conditions.map((condition, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                  >
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{condition}</span>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleRemoveCondition(condition)}
+                        className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span className="ml-1">Recovered</span>
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <p className="text-slate-500 dark:text-slate-400 text-center py-4">No conditions recorded</p>
+              )}
+            </div>
+          </Card>
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2 text-yellow-500" />
+                Allergies
+              </h3>
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                {patientData?.profile?.medicalHistory?.allergies?.length || 0} allergies
+              </span>
+            </div>
+            <div className="space-y-2">
+              {patientData?.profile?.medicalHistory?.allergies?.length > 0 ? (
+                patientData.profile.medicalHistory.allergies.map((allergy, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800"
+                  >
+                    <span className="font-medium text-yellow-700 dark:text-yellow-300">{allergy}</span>
+                    <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                  </motion.div>
+                ))
+              ) : (
+                <p className="text-slate-500 dark:text-slate-400 text-center py-4">No allergies recorded</p>
+              )}
+            </div>
+          </Card>
+        </div>
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center">
+              <Pill className="w-5 h-5 mr-2 text-blue-500" />
+              Current Medications
+            </h3>
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              {patientData?.profile?.medicalHistory?.currentMedications?.length || 0} medications
+            </span>
+          </div>
+          <div className="grid md:grid-cols-3 gap-3">
+            {patientData?.profile?.medicalHistory?.currentMedications?.length > 0 ? (
+              patientData.profile.medicalHistory.currentMedications.map((medication, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-blue-700 dark:text-blue-300">{medication}</span>
+                    <Pill className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">Active</p>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-3">
+                <p className="text-slate-500 dark:text-slate-400 text-center py-4">No medications recorded</p>
+              </div>
+            )}
+          </div>
+        </Card>
+        {patientData?.profile?.medicalHistory?.healthIssues && (
+          <Card>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center">
+              <Heart className="w-5 h-5 mr-2 text-red-500" />
+              Additional Health Information
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+              {patientData.profile.medicalHistory.healthIssues}
+            </p>
+          </Card>
+        )}
+      </div>
+      <Modal isOpen={showAppointmentModal} onClose={() => setShowAppointmentModal(false)}>
+        <div className="p-6">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Book Doctor Appointment</h2>
+          <div className="space-y-4">
+            <Input label="Preferred Date" type="date" />
+            <Input label="Preferred Time" type="time" />
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Reason for Visit
+              </label>
+              <textarea 
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
+                rows="3"
+                placeholder="Brief description of your concern..."
+              />
+            </div>
+            <div className="flex space-x-3 pt-4">
+              <Button onClick={() => setShowAppointmentModal(false)} className="bg-primary hover:bg-primary/90">
+                Book Appointment
+              </Button>
+              <Button variant="outline" onClick={() => setShowAppointmentModal(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    </Layout>
+  )
+}
