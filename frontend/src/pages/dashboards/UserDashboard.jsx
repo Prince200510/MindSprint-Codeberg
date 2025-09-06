@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 // Move nav array outside component to prevent re-renders
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
   {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
   {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
   {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},

@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 backend/.env.example
+backend/.env
 .env.example
 .env
 .env.*.local
