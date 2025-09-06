@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, {Schema} from 'mongoose'
 import bcrypt from 'bcrypt'
 
 const userSchema = new mongoose.Schema({
@@ -40,8 +40,31 @@ const userSchema = new mongoose.Schema({
     }
   },
   
+  pfp: {
+    type: String, // cloudinary url
+    // required: true,
+    trim: true,
+  },
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
+  createdPosts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Post",
+    },
+  ],
+  createdGroups: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Group",
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 })
 
 userSchema.pre('save', async function(next){

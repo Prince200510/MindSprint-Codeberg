@@ -34,6 +34,19 @@ app.use('/api/medicines', medicineRoutes)
 app.use('/api/analytics', analyticsRoutes)
 app.use('/api/chat', chatRoutes)
 
+
+// routes import - maaz
+import userRouter from "./routes/users.routes.js";
+import groupRouter from "./routes/groups.routes.js";
+import postRouter from "./routes/posts.routes.js";
+import commentRouter from "./routes/comments.routes.js";
+
+// routes declaration in middleware `use` - maaz
+app.use("/api/users", userRouter);
+app.use("/api/groups", groupRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
+
 app.get('/api/me', auth, (req,res)=> res.json({id:req.user._id,name:req.user.name,role:req.user.role,doctorApproved:req.user.doctorApproved}))
 
 app.use(notFound)
