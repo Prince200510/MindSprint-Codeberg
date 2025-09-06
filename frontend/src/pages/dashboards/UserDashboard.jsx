@@ -5,7 +5,7 @@ import { Button } from '../../components/Button.jsx'
 import { Modal } from '../../components/Modal.jsx'
 import { Input } from '../../components/Input.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut, ChefHat, Stethoscope} from 'lucide-react'
+import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut, ChefHat, Stethoscope, Users} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 
 // Move nav array outside component to prevent re-renders
@@ -15,7 +15,8 @@ const nav = [
   {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
   {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
   {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
-  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat}
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat},
+  {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 
 export const UserDashboard = () => {
@@ -298,6 +299,34 @@ export const UserDashboard = () => {
             >
               <ChefHat className="w-5 h-5 mr-2" />
               Generate Plan
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-slate-800 dark:text-white">
+                  Healthcare Community
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Connect with others, share experiences, and get support
+                </p>
+                <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-1">
+                  👥 Support Groups • 💬 Discussions • 🤝 Peer Support
+                </p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => window.location.href = '/dashboard/user/community'}
+              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center"
+            >
+              <Users className="w-5 h-5 mr-2" />
+              Join Community
             </Button>
           </div>
         </Card>

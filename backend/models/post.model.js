@@ -34,6 +34,16 @@ const postSchema = new Schema(
         ref: "Comment",
       },
     ],
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    likedBy: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     timestamp: {
       type: Date,
       default: Date.now,

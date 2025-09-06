@@ -120,18 +120,18 @@ const createPost = async (req, res, next) => {
     // console.log("log> user:-"); console.log(user);
   } catch (err) {
     const error = new HttpError(
-      `Something went wrong while 'User.findById(creator)' Error: ${err} - posts.controller.js - createPost()`,
+      `Something went wrong while 'User.findById(userId)' Error: ${err} - posts.controller.js - createPost()`,
       500
     );
     console.log(
-      `log> Something went wrong while 'User.findById(creator)'\nlog>Error: ${err} - posts.controller.js - createPost()`
+      `log> Something went wrong while 'User.findById(userId)'\nlog>Error: ${err} - posts.controller.js - createPost()`
     );
     return next(error);
   }
 
   if (!user) {
     const error = new HttpError(
-      `User with id: ${creator} does not exist in \`users\` collection of db - posts.controller.js - createPost()`,
+      `User with id: ${userId} does not exist in \`users\` collection of db - posts.controller.js - createPost()`,
       401
     );
     console.log(`log> Error: ${error.message}`);
@@ -170,8 +170,19 @@ const createPost = async (req, res, next) => {
     session.startTransaction();
     result = await newPost.save({ session });
     // console.log("log> result:-"); console.log(result);
+    
+    // Initialize createdPosts array if it doesn't exist
+    if (!user.createdPosts) {
+      user.createdPosts = [];
+    }
     user.createdPosts.push(newPost);
+    
+    // Initialize posts array if it doesn't exist
+    if (!group.posts) {
+      group.posts = [];
+    }
     group.posts.push(newPost);
+    
     result = await user.save({ session });
     result = await group.save({ session });
     result = await session.commitTransaction();
@@ -194,7 +205,16 @@ const getGroupPostsByGroupId = async (req, res, next) => {
 
   let groupPosts;
   try {
-    groupPosts = await Post.find({ group: groupId });
+    groupPosts = await Post.find({ group: groupId })
+      .populate('creator', 'name email')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'commenter',
+          select: 'name email'
+        }
+      })
+      .sort({ createdAt: -1 });
     console.log("log> groupPosts:-");
     console.log(groupPosts);
   } catch (err) {
@@ -258,4 +278,51 @@ const getUserCreatedPosts = async (req, res, next) => {
   });
 };
 
-export { getAllPosts, createPost, getGroupPostsByGroupId, getUserCreatedPosts };
+const toggleLikePost = async (req, res, next) => {
+  console.log("log> POST req in `/posts/:postId/like`");
+
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  if (!userId) {
+    const error = new HttpError("User ID is required", 400);
+    return next(error);
+  }
+
+  try {
+    const post = await Post.findById(postId);
+    
+    if (!post) {
+      const error = new HttpError("Post not found", 404);
+      return next(error);
+    }
+
+    const userIndex = post.likedBy.indexOf(userId);
+    
+    if (userIndex > -1) {
+      // User already liked the post, so unlike it
+      post.likedBy.splice(userIndex, 1);
+      post.likes = Math.max(0, post.likes - 1);
+    } else {
+      // User hasn't liked the post, so like it
+      post.likedBy.push(userId);
+      post.likes += 1;
+    }
+
+    await post.save();
+
+    res.json({
+      success: true,
+      post: post.toObject({ getters: true }),
+      liked: userIndex === -1,
+      likes: post.likes
+    });
+
+  } catch (err) {
+    const error = new HttpError(`Could not toggle like! Error: ${err}`, 500);
+    console.log(`log> Could not toggle like!\nlog> Error: ${err}`);
+    return next(error);
+  }
+};
+
+export { getAllPosts, createPost, getGroupPostsByGroupId, getUserCreatedPosts, toggleLikePost };

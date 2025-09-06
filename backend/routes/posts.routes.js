@@ -6,6 +6,7 @@ import {
   createPost,
   getGroupPostsByGroupId,
   getUserCreatedPosts,
+  toggleLikePost,
 } from "../controllers/posts.controller.js";
 import { fileUpload } from "../middleware/file-upload.middleware.js";
 import { verifyJwt } from "../middleware/check-auth.middleware.js";
@@ -28,6 +29,8 @@ router.post(
 );
 
 router.get("/group/:groupId", getGroupPostsByGroupId);
+
+router.post("/:postId/like", toggleLikePost);
 
 router.get("/user", getUserCreatedPosts);
 

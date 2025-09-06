@@ -125,8 +125,19 @@ const createComment = async (req, res, next) => {
     session.startTransaction();
     result = await newComment.save({ session });
     // console.log("log> result:-"); console.log(result);
+    
+    // Initialize comments array if it doesn't exist
+    if (!user.comments) {
+      user.comments = [];
+    }
     user.comments.push(newComment);
+    
+    // Initialize comments array if it doesn't exist
+    if (!post.comments) {
+      post.comments = [];
+    }
     post.comments.push(newComment);
+    
     result = await user.save({ session });
     result = await post.save({ session });
     result = await session.commitTransaction();
@@ -139,8 +150,11 @@ const createComment = async (req, res, next) => {
     return next(error);
   }
 
+  // Populate the commenter information before returning
+  const populatedComment = await Comment.findById(newComment._id).populate('commenter', 'name email');
+
   res.status(201).json({
-    creation: { comment: newComment.toObject({ getters: true }), result },
+    creation: { comment: populatedComment.toObject({ getters: true }), result },
   });
 };
 
@@ -152,7 +166,7 @@ const getPostCommentsByPostId = async (req, res, next) => {
 
   let postComments;
   try {
-    postComments = await Comment.find({ post: postId });
+    postComments = await Comment.find({ post: postId }).populate('commenter', 'name email').sort({ createdAt: -1 });
     console.log("log> postComments:-");
     console.log(postComments);
   } catch (err) {
