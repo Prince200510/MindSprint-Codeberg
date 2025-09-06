@@ -31,6 +31,7 @@ await connectDB();
 const app = express();
 
 const allowedOrigins = [
+  'https://meditrack-mindsprint1.vercel.app', 
   'https://meditrack-mindsprint.vercel.app', 
   'http://localhost:5173', 
   'http://localhost:3000', 

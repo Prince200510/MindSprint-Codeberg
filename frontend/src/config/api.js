@@ -1,10 +1,15 @@
 // Environment configuration utility
 const getEnvironment = () => {
+  // Check if we're running on Vercel (production)
+  if (window.location.hostname.includes('vercel.app')) {
+    return 'production'
+  }
+  // Check environment variables
   return import.meta.env.VITE_NODE_ENV || import.meta.env.NODE_ENV || 'development'
 }
 
 const isProduction = () => {
-  return getEnvironment() === 'production'
+  return getEnvironment() === 'production' || window.location.hostname.includes('vercel.app')
 }
 
 const isDevelopment = () => {
