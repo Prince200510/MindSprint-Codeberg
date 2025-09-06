@@ -331,9 +331,7 @@ export const PatientRegistration = ({ onComplete, onBack }) => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        DOB
-                      </label>
+                            
                        
                     <Input
                       label="Date of Birth"
