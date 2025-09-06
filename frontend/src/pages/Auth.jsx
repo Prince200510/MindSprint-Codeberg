@@ -64,11 +64,26 @@ export const AuthPage = ({mode='login'}) => {
     }
   }, [roleParam])
 
+  useEffect(() => {
+    if (currentMode === 'register' && (form.role === 'doctor' || roleParam === 'doctor')) {
+      const timer = setTimeout(() => {
+        navigate('/doctor-register')
+      }, 100) 
+      
+      return () => clearTimeout(timer)
+    }
+  }, [currentMode, form.role, roleParam, navigate])
+
   const submit = async e => {
     e.preventDefault()
     
     if (currentMode === 'register' && form.role === 'admin') {
       showToast('Admin accounts cannot be created through the website. Please contact system administrator.', 'error')
+      return
+    }
+    
+    if (currentMode === 'register' && form.role === 'doctor') {
+      navigate('/doctor-register')
       return
     }
     
@@ -84,14 +99,25 @@ export const AuthPage = ({mode='login'}) => {
     } catch (error) {
       console.error('Auth error:', error)
       
-      if (error.response?.status === 401) {
-        showToast('Invalid email or password. Please check your credentials.', 'error')
+      if (error.response?.status === 403) {
+        const errorData = error.response.data
+        if (errorData.error === 'account_pending') {
+          showToast('⏳ Your doctor application is under review. Please wait for admin approval before logging in.', 'error')
+        } else if (errorData.error === 'account_rejected') {
+          showToast('❌ Your doctor application was rejected. Please contact support at support@meditrack.com or submit a new application.', 'error')
+        } else if (errorData.error === 'account_not_approved') {
+          showToast('🚫 Your doctor account is not approved. Please contact support at support@meditrack.com for assistance.', 'error')
+        } else {
+          showToast(errorData.message || 'Account access denied. Please contact support.', 'error')
+        }
+      } else if (error.response?.status === 401) {
+        showToast('❌ Invalid email or password. Please check your credentials and try again.', 'error')
       } else if (error.response?.status === 409) {
-        showToast('An account with this email already exists.', 'error')
+        showToast('⚠️ An account with this email already exists. Please use a different email or try logging in.', 'error')
       } else if (error.response?.data?.error === 'missing_fields') {
-        showToast('Please fill in all required fields.', 'error')
+        showToast('📝 Please fill in all required fields before submitting.', 'error')
       } else {
-        showToast('Something went wrong. Please try again.', 'error')
+        showToast('❌ Something went wrong. Please try again later.', 'error')
       }
     } finally {
       setIsLoading(false)
@@ -426,7 +452,30 @@ export const AuthPage = ({mode='login'}) => {
               </motion.p>
             </div>
 
-            <motion.form variants={itemVariants} onSubmit={submit} className="space-y-5">
+            <motion.form variants={itemVariants} onSubmit={submit} className="space-y-5">{currentMode === 'register' && (form.role === 'doctor' || roleParam === 'doctor') ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-8"
+                >
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <Stethoscope className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-3">
+                    Doctor Registration Portal
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">
+                    Please complete the comprehensive doctor registration process with professional credentials, document verification, and availability setup.
+                  </p>
+                  <div className="flex items-center justify-center space-x-2 text-blue-600 dark:text-blue-400">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    <span className="ml-3 text-sm font-medium">Redirecting to registration...</span>
+                  </div>
+                </motion.div>
+              ) : (
+                <>
               <AnimatePresence mode="wait">
                 {currentMode === 'register' && (
                   <motion.div
@@ -575,6 +624,8 @@ export const AuthPage = ({mode='login'}) => {
                   )}
                 </div>
               </motion.button>
+              </>
+              )}
             </motion.form>
 
             {roleParam !== 'admin' && (

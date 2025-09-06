@@ -1,14 +1,52 @@
 import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true, index: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['user','doctor','admin'], default: 'user' },
-  doctorApproved: { type: Boolean, default: false },
+  doctorApproved: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  isVerified: { type: Boolean, default: false },
   specialization: String,
   mobile: String,
+  emergencyContacts: [{
+    name: String,
+    number: String,
+    relationship: String
+  }],
+  otp: {
+    code: String,
+    expiresAt: Date,
+    verified: { type: Boolean, default: false }
+  },
+  
+  professionalInfo: {
+    medicalLicense: String,
+    specialization: String,
+    yearsExperience: Number,
+    education: String,
+    hospitalAffiliation: String,
+    consultationFee: { type: Number, default: 0 },
+    timeSlots: [String],
+    consultationMode: [String], 
+    languages: [String],
+    bio: String,
+    documents: {
+      licenseProof: String,
+      governmentId: String,
+      profilePhoto: String
+    },
+    rating: { type: Number, default: 0 },
+    totalReviews: { type: Number, default: 0 },
+    isAvailable: { type: Boolean, default: false },
+    verificationStatus: { 
+      type: String, 
+      enum: ['pending', 'approved', 'rejected'], 
+      default: 'pending' 
+    },
+    rejectionReason: String
+  },
   profile: {
     firstName: String,
     lastName: String,
@@ -39,7 +77,6 @@ const userSchema = new mongoose.Schema({
       app: { type: Boolean, default: true }
     }
   },
-  
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 })

@@ -2,19 +2,7 @@ import { Medicine } from '../models/Medicine.js'
 
 export const createMedicine = async (req, res) => {
   try {
-    const {
-      name,
-      dosage,
-      frequency,
-      duration,
-      specialInstructions,
-      beforeAfterFood,
-      withWater,
-      avoidAlcohol,
-      startDate,
-      totalDoses,
-      active
-    } = req.body
+    const {name, dosage, frequency, duration, specialInstructions, beforeAfterFood, withWater, avoidAlcohol, startDate, totalDoses, active} = req.body
 
     if (!name || !dosage || !frequency || !duration) {
       return res.status(400).json({

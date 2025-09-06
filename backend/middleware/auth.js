@@ -21,3 +21,10 @@ export const requireRoles = (...roles) => (req,res,next) => {
   if(req.user.role==='doctor' && !req.user.doctorApproved) return res.status(403).json({error:'doctor_not_approved'})
   next()
 }
+
+export const adminOnly = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'admin_access_required' })
+  }
+  next()
+}

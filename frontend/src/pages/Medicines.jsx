@@ -5,9 +5,19 @@ import { Button } from '../components/Button.jsx'
 import { Modal } from '../components/Modal.jsx'
 import { Input } from '../components/Input.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill,  Plus,  Edit3,  Trash2, CheckCircle2, Loader2, Calendar, Clock, Info} from 'lucide-react'
+import { Pill,  Plus,  Edit3,  Trash2, CheckCircle2, Loader2, Calendar, Clock, Info, User, Stethoscope, Heart, ChefHat} from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
+
+// Move nav array outside component to prevent re-renders
+const nav = [
+  {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
+  {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
+  {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat}
+]
 
 export const Medicines = () => {
   const { user } = useAuth()
@@ -31,15 +41,6 @@ export const Medicines = () => {
     totalDoses: '',
     active: true
   })
-
-  const nav = [
-    {to:'/dashboard/user', label:'Overview'},
-    {to:'/dashboard/user/prescriptions', label:'Prescriptions'},
-    {to:'/dashboard/user/medicines', label:'Medicines'},
-    {to:'/dashboard/user/schedule', label:'Schedule'},
-    {to:'/dashboard/user/analytics', label:'Analytics'},
-    {to:'/dashboard/user/chat', label:'Chat'}
-  ]
 
   useEffect(() => {
     fetchMedicines()
@@ -333,9 +334,9 @@ export const Medicines = () => {
             <h1 className="text-2xl font-bold text-slate-800 dark:text-white">My Medicines</h1>
             <p className="text-slate-600 dark:text-slate-400">Manage your medicine inventory and records</p>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             {!showAddModal && (
-              <Button onClick={() => setShowAddModal(true)} className="bg-primary hover:bg-primary/90">
+              <Button onClick={() => setShowAddModal(true)} className="bg-primary hover:bg-primary/90 flex items-center">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Medicine
               </Button>

@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+backend/.env.example
+.env.example
 .env
 .env.*.local
 .vscode/*

@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, LogOut, Menu, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -6,7 +6,9 @@ import { useState, useEffect } from 'react'
 
 export const Sidebar = ({items}) => {
   const { user, logout } = useAuth()
+  const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  
   useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [location])
@@ -21,22 +23,6 @@ export const Sidebar = ({items}) => {
   }
 
   const { title, subtitle } = getSidebarTitle()
-  const containerVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.3,
-        staggerChildren: 0.1
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 }
-  }
 
   const mobileMenuVariants = {
     hidden: { x: '-100%' },
@@ -76,12 +62,13 @@ export const Sidebar = ({items}) => {
       </div>
       
       <nav className="space-y-2 flex-1">
-        {items.map((item, index) => {
+        {items && items.length > 0 ? items.map((item, index) => {
           const Icon = item.icon
           return (
-            <motion.div key={item.to} variants={itemVariants}>
+            <div key={item.to}>
               <NavLink 
                 to={item.to} 
+                end={item.to === '/dashboard/user' || item.to === '/dashboard/doctor' || item.to === '/dashboard/admin'}
                 onClick={() => isMobile && setIsMobileMenuOpen(false)}
                 className={({isActive}) => `
                   group flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 relative overflow-hidden
@@ -109,18 +96,22 @@ export const Sidebar = ({items}) => {
                     
                     {isActive && (
                       <motion.div
-                        layoutId={isMobile ? "activeTabMobile" : "activeTab"}
                         className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 rounded-xl"
-                        initial={false}
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
                       />
                     )}
                   </>
                 )}
               </NavLink>
-            </motion.div>
+            </div>
           )
-        })}
+        }) : (
+          <div className="p-4 text-center text-slate-500 dark:text-slate-400">
+            <p className="text-sm">No navigation items available</p>
+          </div>
+        )}
       </nav>
 
       <div className="mt-auto pt-4 sm:pt-6 border-t border-slate-200 dark:border-slate-700 space-y-3 sm:space-y-4">
@@ -171,9 +162,9 @@ export const Sidebar = ({items}) => {
         <Menu className="w-5 h-5 text-slate-600 dark:text-slate-300" />
       </motion.button>
       <motion.aside 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
         className="w-72 shrink-0 hidden md:flex flex-col gap-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-700/60"
       >
         <SidebarContent />

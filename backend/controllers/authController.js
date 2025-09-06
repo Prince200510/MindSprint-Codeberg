@@ -63,12 +63,67 @@ export const register = async (req,res) => {
 }
 
 export const login = async (req,res) => {
-  const { email,password } = req.body
-  const user = await User.findOne({email})
-  if(!user) return res.status(401).json({error:'invalid_credentials'})
-  const match = await user.comparePassword(password)
-  if(!match) return res.status(401).json({error:'invalid_credentials'})
-  res.json({token: sign(user), user:{id:user._id,name:user.name,role:user.role,doctorApproved:user.doctorApproved}})
+  try {
+    const { email, password } = req.body
+    const user = await User.findOne({email})
+    
+    if(!user) {
+      return res.status(401).json({
+        error:'invalid_credentials',
+        message: 'Invalid email or password. Please check your credentials.'
+      })
+    }
+    
+    const match = await user.comparePassword(password)
+    if(!match) {
+      return res.status(401).json({
+        error:'invalid_credentials',
+        message: 'Invalid email or password. Please check your credentials.'
+      })
+    }
+    
+    if (user.role === 'doctor') {
+      if (user.doctorApproved === 'pending') {
+        return res.status(403).json({
+          error: 'account_pending',
+          message: 'Your doctor application is under review. Please wait for admin approval.',
+          status: 'pending'
+        })
+      }
+      
+      if (user.doctorApproved === 'rejected') {
+        return res.status(403).json({
+          error: 'account_rejected',
+          message: 'Your doctor application has been rejected. Please contact support or reapply.',
+          status: 'rejected'
+        })
+      }
+      
+      if (user.doctorApproved !== 'approved') {
+        return res.status(403).json({
+          error: 'account_not_approved',
+          message: 'Your doctor account is not approved. Please contact support.',
+          status: user.doctorApproved || 'unknown'
+        })
+      }
+    }
+    
+    res.json({
+      token: sign(user), 
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+        doctorApproved: user.doctorApproved
+      }
+    })
+  } catch (error) {
+    console.error('Login error:', error)
+    res.status(500).json({
+      error: 'server_error',
+      message: 'Something went wrong during login. Please try again.'
+    })
+  }
 }
 
 export const me = async (req,res) => {

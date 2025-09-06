@@ -6,11 +6,16 @@ import Landing from './pages/Landing.jsx'
 import { AuthPage } from './pages/Auth.jsx'
 import { UserDashboard } from './pages/dashboards/UserDashboard.jsx'
 import { DoctorDashboard } from './pages/dashboards/DoctorDashboard.jsx'
+import { DoctorRegistration } from './pages/dashboards/DoctorRegistration.jsx'
 import { AdminDashboard } from './pages/dashboards/AdminDashboard.jsx'
-import { ChatPage } from './pages/Chat.jsx'
 import { AnalyticsPage } from './pages/Analytics.jsx'
 import { Prescriptions } from './pages/Prescriptions.jsx'
 import { Medicines } from './pages/Medicines.jsx'
+import { Schedule } from './pages/Schedule.jsx'
+import { Settings } from './pages/Settings.jsx'
+import { AvailableDoctors } from './pages/AvailableDoctors.jsx'
+import { UserAppointments } from './pages/UserAppointments.jsx'
+import { Diet } from './pages/Diet.jsx'
 
 const Guard = ({children, roles}) => {
   const {user} = useAuth()
@@ -36,12 +41,18 @@ export const App = () => <ThemeProvider><AuthProvider><NotificationProvider><Bro
     <Route path='/auth' element={<AuthPage />} />
     <Route path='/auth/login' element={<AuthPage mode='login' />} />
     <Route path='/auth/register' element={<AuthPage mode='register' />} />
+    <Route path='/doctor-register' element={<DoctorRegistration />} />
     <Route path='/dashboard/user' element={<Guard roles={['user']}><UserDashboard /></Guard>} />
+    <Route path='/dashboard/user/doctors' element={<Guard roles={['user']}><AvailableDoctors /></Guard>} />
+    <Route path='/dashboard/user/appointments' element={<Guard roles={['user']}><UserAppointments /></Guard>} />
     <Route path='/dashboard/user/prescriptions' element={<Guard roles={['user']}><Prescriptions /></Guard>} />
     <Route path='/dashboard/user/medicines' element={<Guard roles={['user']}><Medicines /></Guard>} />
+    <Route path='/dashboard/user/diet' element={<Guard roles={['user']}><Diet /></Guard>} />
+    <Route path='/dashboard/user/schedule' element={<Guard roles={['user']}><Schedule /></Guard>} />
+    <Route path='/dashboard/user/analytics' element={<Guard roles={['user']}><AnalyticsPage /></Guard>} />
+    <Route path='/dashboard/user/settings' element={<Guard roles={['user']}><Settings /></Guard>} />
     <Route path='/dashboard/doctor/*' element={<Guard roles={['doctor']}><DoctorDashboard /></Guard>} />
     <Route path='/dashboard/admin/*' element={<Guard roles={['admin']}><AdminDashboard /></Guard>} />
-    <Route path='/chat' element={<Guard roles={['user','doctor','admin']}><ChatPage /></Guard>} />
     <Route path='/analytics' element={<Guard roles={['user','doctor','admin']}><AnalyticsPage /></Guard>} />
   </Routes>
 </BrowserRouter></NotificationProvider></AuthProvider></ThemeProvider>

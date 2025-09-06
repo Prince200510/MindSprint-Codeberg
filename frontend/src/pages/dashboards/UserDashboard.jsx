@@ -5,25 +5,28 @@ import { Button } from '../../components/Button.jsx'
 import { Modal } from '../../components/Modal.jsx'
 import { Input } from '../../components/Input.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut} from 'lucide-react'
+import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut, ChefHat, Stethoscope} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
+
+// Move nav array outside component to prevent re-renders
+const nav = [
+  {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
+  {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
+  {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat}
+]
 
 export const UserDashboard = () => {
   const { user, logout } = useAuth()
   const [patientData, setPatientData] = useState(null)
+  const [prescriptions, setPrescriptions] = useState([])
+  const [nextDose, setNextDose] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showAppointmentModal, setShowAppointmentModal] = useState(false)
   const [editingCondition, setEditingCondition] = useState(null)
   const [loading, setLoading] = useState(true)
-
-  const nav = [
-    {to:'/dashboard/user', label:'Overview'},
-    {to:'/dashboard/user/prescriptions', label:'Prescriptions'},
-    {to:'/dashboard/user/medicines', label:'Medicines'},
-    {to:'/dashboard/user/schedule', label:'Schedule'},
-    {to:'/dashboard/user/analytics', label:'Analytics'},
-    {to:'/dashboard/user/chat', label:'Chat'}
-  ]
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -47,10 +50,64 @@ export const UserDashboard = () => {
       }
     }
 
+    const fetchPrescriptions = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+        
+        const response = await fetch(`${API_BASE}/prescriptions`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setPrescriptions(data.prescriptions || [])
+          
+          const activePrescriptions = data.prescriptions?.filter(p => p.active && p.times?.length > 0) || []
+          const nextDoseInfo = calculateNextDose(activePrescriptions)
+          setNextDose(nextDoseInfo)
+        }
+      } catch (error) {
+        console.error('Error fetching prescriptions:', error)
+      }
+    }
+
     if (user) {
       fetchPatientData()
+      fetchPrescriptions()
     }
   }, [user])
+
+  const calculateNextDose = (prescriptions) => {
+    const now = new Date()
+    const currentTime = now.getHours() * 60 + now.getMinutes()
+    
+    let nextDose = null
+    let minTimeDiff = Infinity
+    
+    prescriptions.forEach(prescription => {
+      prescription.times?.forEach(timeStr => {
+        const [hours, minutes] = timeStr.split(':').map(Number)
+        const timeInMinutes = hours * 60 + minutes
+        
+        let timeDiff = timeInMinutes - currentTime
+        if (timeDiff < 0) {
+          timeDiff += 24 * 60
+        }
+        
+        if (timeDiff < minTimeDiff) {
+          minTimeDiff = timeDiff
+          nextDose = {
+            time: timeStr,
+            medicine: prescription.medicineName,
+            dosage: prescription.dosage
+          }
+        }
+      })
+    })
+    
+    return nextDose
+  }
 
   const handleRemoveCondition = async (conditionToRemove) => {
     try {
@@ -126,18 +183,10 @@ export const UserDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button onClick={handleBookAppointment} className="bg-green-500 hover:bg-green-600">
+            <div className="flex items-center">
+              <Button onClick={handleBookAppointment} className="bg-green-500 hover:bg-green-600 flex items-center">
                 <Calendar className="w-4 h-4 mr-2" />
                 Book Appointment
-              </Button>
-              <Button 
-                onClick={logout}
-                variant="outline"
-                className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
               </Button>
             </div>
           </div>
@@ -203,7 +252,7 @@ export const UserDashboard = () => {
               <div>
                 <h3 className="text-sm font-medium text-blue-600 dark:text-blue-400">Medications</h3>
                 <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                  {patientData?.profile?.medicalHistory?.currentMedications?.length || 0}
+                  {prescriptions.filter(p => p.active).length}
                 </p>
               </div>
               <Pill className="w-8 h-8 text-blue-500" />
@@ -214,14 +263,45 @@ export const UserDashboard = () => {
               <div>
                 <h3 className="text-sm font-medium text-green-600 dark:text-green-400">Next Dose</h3>
                 <p className="text-lg font-bold text-green-700 dark:text-green-300">
-                  7:00 AM
+                  {nextDose ? nextDose.time : 'No doses scheduled'}
                 </p>
-                <p className="text-xs text-green-600 dark:text-green-400">Vitamin D</p>
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  {nextDose ? nextDose.medicine : 'Add prescriptions to see schedule'}
+                </p>
               </div>
               <Clock className="w-8 h-8 text-green-500" />
             </div>
           </Card>
         </div>
+        
+        <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-purple-200 dark:border-purple-800">
+          <div className="flex items-center justify-between p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                <ChefHat className="w-8 h-8 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-slate-800 dark:text-white">
+                  AI Diet Plan
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Get personalized meal plans powered by artificial intelligence
+                </p>
+                <p className="text-sm text-purple-600 dark:text-purple-400 font-medium mt-1">
+                  🥗 Customized • 🛒 Shopping Lists • 📊 Nutrition Focused
+                </p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => window.location.href = '/dashboard/user/diet'}
+              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center"
+            >
+              <ChefHat className="w-5 h-5 mr-2" />
+              Generate Plan
+            </Button>
+          </div>
+        </Card>
+        
         <div className="grid md:grid-cols-2 gap-6">
           <Card>
             <div className="flex items-center justify-between mb-4">
@@ -297,28 +377,50 @@ export const UserDashboard = () => {
               Current Medications
             </h3>
             <span className="text-sm text-slate-500 dark:text-slate-400">
-              {patientData?.profile?.medicalHistory?.currentMedications?.length || 0} medications
+              {prescriptions.filter(p => p.active).length} medications
             </span>
           </div>
           <div className="grid md:grid-cols-3 gap-3">
-            {patientData?.profile?.medicalHistory?.currentMedications?.length > 0 ? (
-              patientData.profile.medicalHistory.currentMedications.map((medication, index) => (
+            {prescriptions.filter(p => p.active).length > 0 ? (
+              prescriptions.filter(p => p.active).map((prescription, index) => (
                 <motion.div
-                  key={index}
+                  key={prescription._id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
+                  className="p-4 bg-gradient-to-br from-[#5f6fff]/10 to-[#5f6fff]/20 dark:from-[#5f6fff]/20 dark:to-[#5f6fff]/30 rounded-lg border border-[#5f6fff]/30 dark:border-[#5f6fff]/40"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-blue-700 dark:text-blue-300">{medication}</span>
-                    <Pill className="w-4 h-4 text-blue-500" />
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-slate-800 dark:text-white">{prescription.medicineName}</span>
+                    <Pill className="w-4 h-4 text-[#5f6fff]" />
                   </div>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">Active</p>
+                  <div className="space-y-1">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="font-medium">Dosage:</span> {prescription.dosage}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="font-medium">Frequency:</span> {prescription.frequency}
+                    </p>
+                    {prescription.times && prescription.times.length > 0 && (
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        <span className="font-medium">Times:</span> {prescription.times.join(', ')}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between pt-2">
+                      <p className="text-xs text-[#5f6fff] font-medium">Active</p>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {prescription.takenDoses || 0}/{prescription.totalDoses} doses
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))
             ) : (
               <div className="col-span-3">
-                <p className="text-slate-500 dark:text-slate-400 text-center py-4">No medications recorded</p>
+                <p className="text-slate-500 dark:text-slate-400 text-center py-8">
+                  No active medications found. 
+                  <br />
+                  <span className="text-sm">Visit the Prescriptions page to add your medications.</span>
+                </p>
               </div>
             )}
           </div>

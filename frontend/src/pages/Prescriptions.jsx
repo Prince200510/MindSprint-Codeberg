@@ -5,9 +5,19 @@ import { Button } from '../components/Button.jsx'
 import { Modal } from '../components/Modal.jsx'
 import { Input } from '../components/Input.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill,  Plus,  Clock,  Calendar,  AlertTriangle,  Edit3,  Trash2, Bell, CheckCircle2, Info, Timer, Loader2} from 'lucide-react'
+import { Pill,  Plus,  Clock,  Calendar,  AlertTriangle,  Edit3,  Trash2, Bell, CheckCircle2, Info, Timer, Loader2, User, Stethoscope, Heart, ChefHat} from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
+
+// Move nav array outside component to prevent re-renders
+const nav = [
+  {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
+  {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
+  {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat}
+]
 
 export const Prescriptions = () => {
   const { user } = useAuth()
@@ -37,15 +47,6 @@ export const Prescriptions = () => {
     totalDoses: '',
     doseTimes: []
   })
-
-  const nav = [
-    {to:'/dashboard/user', label:'Overview'},
-    {to:'/dashboard/user/prescriptions', label:'Prescriptions'},
-    {to:'/dashboard/user/medicines', label:'Medicines'},
-    {to:'/dashboard/user/schedule', label:'Schedule'},
-    {to:'/dashboard/user/analytics', label:'Analytics'},
-    {to:'/dashboard/user/chat', label:'Chat'}
-  ]
   useEffect(() => {
     fetchPrescriptions()
   }, [])
@@ -561,21 +562,10 @@ export const Prescriptions = () => {
             <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Prescriptions</h1>
             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">Manage your medications and dosage schedules</p>
           </div>
-          <div className="flex items-center space-x-1 sm:space-x-2">
+          <div className="flex items-center">
             {!showAddModal && !showDoseModal && (
-              <>
-                <Button 
-                  onClick={() => {
-                    console.log('Loading dose logs as notifications...')
-                    loadDoseLogsAsNotifications(prescriptions)
-                  }}
-                  variant="outline" 
-                  size="sm"
-                  className="text-xs sm:text-sm px-2 sm:px-3 hidden sm:inline-flex"
-                >
-                  Load Past Doses
-                </Button>
-                <Button 
+              <>  
+                {/* <Button 
                   onClick={() => {
                     const now = new Date()
                     const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0')
@@ -591,11 +581,11 @@ export const Prescriptions = () => {
                   className="text-xs sm:text-sm px-2 sm:px-3 hidden sm:inline-flex"
                 >
                   Test Notification
-                </Button>
-                <Button onClick={() => setShowAddModal(true)} className="bg-primary hover:bg-primary/90 px-2 sm:px-4 py-1.5 sm:py-2">
+                </Button> */}
+                <Button onClick={() => setShowAddModal(true)} className="bg-primary hover:bg-primary/90 flex items-center px-2 sm:px-4 py-1.5 sm:py-2">
                   <Plus className="w-4 h-4 mr-1 sm:mr-2" />
-                  <span className="text-sm sm:text-base">Add</span>
-                  <span className="hidden sm:inline ml-1">Prescription</span>
+                  <span className="text-sm sm:text-base">Add Prescription</span>
+                
                 </Button>
               </>
             )}

@@ -11,7 +11,6 @@ const storage = multer.diskStorage({
 const upload = multer({storage})
 
 const r = Router()
-
 r.post('/', auth, createPrescription)
 r.get('/', auth, getPrescriptions)
 r.put('/:id', auth, updatePrescription)

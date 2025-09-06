@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
@@ -10,6 +11,7 @@ export const Topbar = () => {
   const { toggle, theme } = useTheme()
   const { user, logout } = useAuth()
   const { notifications, unreadCount, markAsRead, removeNotification } = useNotifications()
+  const navigate = useNavigate()
   const [showProfile, setShowProfile] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
@@ -54,7 +56,6 @@ export const Topbar = () => {
         <div className="font-bold text-lg sm:text-xl text-slate-900 dark:text-white">
           <span className="hidden xs:inline">MediTrack</span>
           <span className="xs:hidden">MT</span>
-          <span className="text-xs font-medium text-primary ml-1 sm:ml-2 bg-primary/10 px-1 sm:px-2 py-0.5 sm:py-1 rounded-full hidden sm:inline">Admin</span>
         </div>
       </div>
       <div className="flex-1 max-w-xs sm:max-w-md mx-2 sm:mx-8 hidden md:block">
@@ -245,6 +246,7 @@ export const Topbar = () => {
         <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => navigate('/dashboard/user/settings')}
           className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors hidden sm:block"
         >
           <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 dark:text-slate-300" />

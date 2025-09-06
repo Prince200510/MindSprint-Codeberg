@@ -593,7 +593,6 @@ export const PatientRegistration = ({ onComplete, onBack }) => {
   )
 }
 
-
 const MedicalListSection = ({ title, subtitle, icon: Icon, items, onAdd, onRemove, placeholder, color, bgColor }) => {
   const [inputValue, setInputValue] = useState('')
 
