@@ -1,49 +1,57 @@
-import { NavLink, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, LogOut, Menu, X } from 'lucide-react'
-import { useAuth } from '../context/AuthContext.jsx'
-import { useState, useEffect } from 'react'
+import { NavLink, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, LogOut, Menu, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useState, useEffect } from "react";
 
-export const Sidebar = ({items}) => {
-  const { user, logout } = useAuth()
-  const location = useLocation()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
+export const Sidebar = ({ items }) => {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [location])
-  
-  const getSidebarTitle = () => {
-    switch(user?.role) {
-      case 'admin': return { title: 'Admin Panel', subtitle: 'Manage your platform' }
-      case 'doctor': return { title: 'Doctor Dashboard', subtitle: 'Manage your practice' }
-      case 'user': return { title: 'Patient Dashboard', subtitle: 'Manage your health' }
-      default: return { title: 'Dashboard', subtitle: 'Welcome' }
-    }
-  }
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
-  const { title, subtitle } = getSidebarTitle()
+  const getSidebarTitle = () => {
+    switch (user?.role) {
+      case "admin":
+        return { title: "Admin Panel", subtitle: "Manage your platform" };
+      case "doctor":
+        return { title: "Doctor Dashboard", subtitle: "Manage your practice" };
+      case "user":
+        return { title: "Patient Dashboard", subtitle: "Manage your health" };
+      default:
+        return { title: "Dashboard", subtitle: "Welcome" };
+    }
+  };
+
+  const { title, subtitle } = getSidebarTitle();
 
   const mobileMenuVariants = {
-    hidden: { x: '-100%' },
-    visible: { 
+    hidden: { x: "-100%" },
+    visible: {
       x: 0,
-      transition: { type: 'spring', damping: 25, stiffness: 200 }
+      transition: { type: "spring", damping: 25, stiffness: 200 },
     },
-    exit: { 
-      x: '-100%',
-      transition: { type: 'spring', damping: 25, stiffness: 200 }
-    }
-  }
+    exit: {
+      x: "-100%",
+      transition: { type: "spring", damping: 25, stiffness: 200 },
+    },
+  };
 
   const SidebarContent = ({ isMobile = false }) => (
-    <div className={`flex flex-col h-full ${isMobile ? 'p-4' : 'p-6'}`}>
-      <div className={`${isMobile ? 'mb-6' : 'mb-8'}`}>
+    <div className={`flex flex-col h-full ${isMobile ? "p-4" : "p-6"}`}>
+      <div className={`${isMobile ? "mb-6" : "mb-8"}`}>
         {isMobile && (
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-white">{title}</h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</p>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
+                {title}
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                {subtitle}
+              </p>
             </div>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
@@ -55,59 +63,76 @@ export const Sidebar = ({items}) => {
         )}
         {!isMobile && (
           <>
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-1">{title}</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</p>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-1">
+              {title}
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {subtitle}
+            </p>
           </>
         )}
       </div>
-      
+
       <nav className="space-y-2 flex-1">
-        {items && items.length > 0 ? items.map((item, index) => {
-          const Icon = item.icon
-          return (
-            <div key={item.to}>
-              <NavLink 
-                to={item.to} 
-                end={item.to === '/dashboard/user' || item.to === '/dashboard/doctor' || item.to === '/dashboard/admin'}
-                onClick={() => isMobile && setIsMobileMenuOpen(false)}
-                className={({isActive}) => `
+        {items && items.length > 0 ? (
+          items.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.to}>
+                <NavLink
+                  to={item.to}
+                  end={
+                    item.to === "/dashboard/user" ||
+                    item.to === "/dashboard/doctor" ||
+                    item.to === "/dashboard/admin"
+                  }
+                  onClick={() => isMobile && setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => `
                   group flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 relative overflow-hidden
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25' 
-                    : 'hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ${
+                    isActive
+                      ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25"
+                      : "hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                   }
                 `}
-              >
-                {({isActive}) => (
-                  <>
-                    <div className="flex items-center space-x-3">
-                      {Icon && (
-                        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${
-                          isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300'
-                        }`} />
-                      )}
-                      <span className="relative z-10">{item.label}</span>
-                    </div>
-                    <ChevronRight className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${
-                      isActive 
-                        ? 'text-white opacity-100 transform translate-x-0' 
-                        : 'text-slate-400 opacity-0 transform -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'
-                    }`} />
-                    
-                    {isActive && (
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 rounded-xl"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2 }}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div className="flex items-center space-x-3">
+                        {Icon && (
+                          <Icon
+                            className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${
+                              isActive
+                                ? "text-white"
+                                : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                            }`}
+                          />
+                        )}
+                        <span className="relative z-10">{item.label}</span>
+                      </div>
+                      <ChevronRight
+                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${
+                          isActive
+                            ? "text-white opacity-100 transform translate-x-0"
+                            : "text-slate-400 opacity-0 transform -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+                        }`}
                       />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            </div>
-          )
-        }) : (
+
+                      {isActive && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 rounded-xl"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              </div>
+            );
+          })
+        ) : (
           <div className="p-4 text-center text-slate-500 dark:text-slate-400">
             <p className="text-sm">No navigation items available</p>
           </div>
@@ -119,8 +144,8 @@ export const Sidebar = ({items}) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => {
-            logout()
-            isMobile && setIsMobileMenuOpen(false)
+            logout();
+            isMobile && setIsMobileMenuOpen(false);
           }}
           className="w-full flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800"
         >
@@ -134,22 +159,29 @@ export const Sidebar = ({items}) => {
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
               <span className="text-white font-semibold text-xs sm:text-sm">
-                {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                {user?.name
+                  ? user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2)
+                  : "U"}
               </span>
             </div>
             <div>
               <p className="text-xs sm:text-sm font-medium text-slate-900 dark:text-white">
-                {user?.name || 'User'}
+                {user?.name || "User"}
               </p>
               <p className="text-xs text-slate-600 dark:text-slate-400 capitalize">
-                {user?.role === 'user' ? 'Patient' : user?.role || 'User'}
+                {user?.role === "user" ? "Patient" : user?.role || "User"}
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <>
@@ -161,7 +193,7 @@ export const Sidebar = ({items}) => {
       >
         <Menu className="w-5 h-5 text-slate-600 dark:text-slate-300" />
       </motion.button>
-      <motion.aside 
+      <motion.aside
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -192,5 +224,5 @@ export const Sidebar = ({items}) => {
         )}
       </AnimatePresence>
     </>
-  )
-}
+  );
+};
