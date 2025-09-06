@@ -5,6 +5,7 @@ import { Button } from '../components/Button.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, Pill, CheckCircle, XCircle, AlertCircle, Plus, Filter, RefreshCw } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
+import { API_CONFIG } from '../config/api.js'
 import axios from 'axios'
 
 export const Schedule = () => {
@@ -24,7 +25,7 @@ export const Schedule = () => {
     {to:'/dashboard/user/chat', label:'Chat'}
   ]
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  const API_BASE = API_CONFIG.API_URL
 
   useEffect(() => {
     if (token) {

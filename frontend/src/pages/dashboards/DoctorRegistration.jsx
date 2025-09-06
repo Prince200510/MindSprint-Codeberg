@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { User,  Mail,  Phone,  Shield,  FileText,  Upload,  Clock,  Award,  MapPin, GraduationCap, Stethoscope, DollarSign, Calendar, MessageSquare, Video, Users, CheckCircle, ArrowRight, ArrowLeft, AlertTriangle, Camera, Globe, Loader2} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useNotifications } from '../../context/NotificationContext.jsx'
+import { API_CONFIG } from '../../config/api.js'
 
 export const DoctorRegistration = () => {
   const { user } = useAuth()
@@ -46,7 +47,7 @@ export const DoctorRegistration = () => {
   })
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  const API_BASE = API_CONFIG.API_URL
   const specializations = ['General Physician', 'Cardiologist',  'Neurologist', 'Dermatologist', 'Pediatrician', 'Gynecologist', 'Orthopedic Surgeon', 'Psychiatrist', 'Radiologist', 'Anesthesiologist', 'Urologist', 'ENT Specialist', 'Ophthalmologist', 'Emergency Medicine', 'Family Medicine']
   const consultationModes = [
     { id: 'video', label: 'Video Call', icon: Video },

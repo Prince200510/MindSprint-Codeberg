@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { User, Mail, Phone, Shield, Plus, Trash2, Save, Eye, EyeOff, Loader2, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
+import { API_CONFIG } from '../config/api.js'
 import emailjs from '@emailjs/browser'
 
 export const Settings = () => {
@@ -59,7 +60,7 @@ export const Settings = () => {
     {to:'/dashboard/admin/settings', label:'Settings'}
   ]
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  const API_BASE = API_CONFIG.API_URL
 
   useEffect(() => {
     fetchProfile()

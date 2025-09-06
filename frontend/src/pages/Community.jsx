@@ -12,6 +12,7 @@ import {
   ChefHat
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
+import { API_CONFIG } from '../config/api.js'
 
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
@@ -205,7 +206,7 @@ export const Community = () => {
   const [likedPosts, setLikedPosts] = useState(new Set()) // Track liked posts
   const [expandedComments, setExpandedComments] = useState(new Set()) // Track which posts have expanded comments
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  const API_BASE = API_CONFIG.API_URL
 
   // Simple notification function
   const showNotification = (message, type = 'info') => {
