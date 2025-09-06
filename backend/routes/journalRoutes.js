@@ -145,11 +145,18 @@ Instructions:
       generationConfig: generationConfig,
     };
 
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`API call failed with status: ${response.status}`);
@@ -214,7 +221,15 @@ Instructions:
     };
   } catch (err) {
     console.error("Error analyzing text with Gemini API:", err);
-    throw err;
+    
+    // Return fallback analysis if API fails
+    return {
+      sentiment: "neutral",
+      score: 0,
+      magnitude: 0,
+      emotions: ["calmness"],
+      triggers: [{ name: "unspecified", type: "UNSPECIFIED" }],
+    };
   }
 }
 
@@ -225,15 +240,35 @@ router.post("/", async (req, res) => {
   try {
     const { userId, text } = req.body;
 
-    // Save journal first
+    // Save journal first and respond immediately
     const journal = await Journal.create({ userId, text });
 
+    // Respond immediately with the journal
+    res.status(201).json({ 
+      journal, 
+      message: "Journal saved successfully. AI analysis is being processed in the background."
+    });
+
+    // Run AI analysis in background (don't await)
+    processAIAnalysis(journal._id, userId, text).catch(err => {
+      console.error("Background AI analysis failed:", err);
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Background processing function
+async function processAIAnalysis(journalId, userId, text) {
+  try {
     // Run AI analysis
     const analysis = await analyzeText(text);
 
     // Save analysis result
     await MoodAnalysis.create({
-      journalId: journal._id,
+      journalId,
       userId,
       sentiment: analysis.sentiment,
       score: analysis.score,
@@ -242,18 +277,14 @@ router.post("/", async (req, res) => {
       triggers: analysis.triggers,
     });
 
-    journal.analysisDone = true;
-    await journal.save();
+    // Update journal as analyzed
+    await Journal.findByIdAndUpdate(journalId, { analysisDone: true });
 
-    // Generate supportive message using Gemini AI
-    const supportMessage = await generateSupportMessageWithAI(analysis, text);
-
-    res.status(201).json({ journal, analysis, supportMessage });
+    console.log(`AI analysis completed for journal ${journalId}`);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("Error in background AI processing:", err);
   }
-});
+}
 
 // GET -> Fetch all journals + analysis for a user
 router.get("/:userId", async (req, res) => {
@@ -264,6 +295,41 @@ router.get("/:userId", async (req, res) => {
     const analysis = await MoodAnalysis.find({ userId });
 
     res.json({ journals, analysis });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET -> Check if AI analysis is complete for a specific journal
+router.get("/analysis/:journalId", async (req, res) => {
+  try {
+    const { journalId } = req.params;
+    
+    const journal = await Journal.findById(journalId);
+    if (!journal) {
+      return res.status(404).json({ error: "Journal not found" });
+    }
+
+    if (!journal.analysisDone) {
+      return res.json({ 
+        analyzed: false, 
+        message: "Analysis still in progress" 
+      });
+    }
+
+    const analysis = await MoodAnalysis.findOne({ journalId });
+    
+    // Generate supportive message if analysis is complete
+    let supportMessage = "Keep going, you're doing great! 🌟";
+    if (analysis) {
+      supportMessage = await generateSupportMessageWithAI(analysis, journal.text);
+    }
+
+    res.json({ 
+      analyzed: true, 
+      analysis, 
+      supportMessage 
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

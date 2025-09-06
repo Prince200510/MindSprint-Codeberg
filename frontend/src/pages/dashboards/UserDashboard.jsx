@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Layout } from '../../components/Layout.jsx'
 import { Card } from '../../components/Card.jsx'
 import { Button } from '../../components/Button.jsx'
@@ -8,7 +9,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut, ChefHat, Stethoscope, Users} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 
-// Move nav array outside component to prevent re-renders
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
   {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
@@ -22,6 +22,7 @@ const nav = [
 
 export const UserDashboard = () => {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [patientData, setPatientData] = useState(null)
   const [prescriptions, setPrescriptions] = useState([])
   const [nextDose, setNextDose] = useState(null)
@@ -29,6 +30,18 @@ export const UserDashboard = () => {
   const [showAppointmentModal, setShowAppointmentModal] = useState(false)
   const [editingCondition, setEditingCondition] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [appointmentForm, setAppointmentForm] = useState({
+    doctorId: '',
+    appointmentType: 'online',
+    appointmentDate: '',
+    appointmentTime: '',
+    symptoms: '',
+    currentMedication: '',
+    medicalHistory: '',
+    urgencyLevel: 'medium'
+  })
+  const [availableDoctors, setAvailableDoctors] = useState([])
+  const [bookingAppointment, setBookingAppointment] = useState(false)
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -74,9 +87,28 @@ export const UserDashboard = () => {
       }
     }
 
+    const fetchDoctors = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+        
+        const response = await fetch(`${API_BASE}/appointments/doctors/available`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setAvailableDoctors(data.doctors || [])
+        }
+      } catch (error) {
+        console.error('Error fetching doctors:', error)
+      }
+    }
+
     if (user) {
       fetchPatientData()
       fetchPrescriptions()
+      fetchDoctors()
     }
   }, [user])
 
@@ -148,6 +180,60 @@ export const UserDashboard = () => {
 
   const handleBookAppointment = () => {
     setShowAppointmentModal(true)
+  }
+
+  const handleAppointmentFormChange = (field, value) => {
+    setAppointmentForm(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  const submitAppointment = async () => {
+    if (!appointmentForm.doctorId || !appointmentForm.appointmentDate || !appointmentForm.appointmentTime) {
+      alert('Please fill in all required fields')
+      return
+    }
+
+    setBookingAppointment(true)
+    try {
+      const token = localStorage.getItem('token')
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+      
+      const response = await fetch(`${API_BASE}/appointments/book`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(appointmentForm)
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        alert('Appointment booked successfully!')
+        setShowAppointmentModal(false)
+        // Reset form
+        setAppointmentForm({
+          doctorId: '',
+          appointmentType: 'online',
+          appointmentDate: '',
+          appointmentTime: '',
+          symptoms: '',
+          currentMedication: '',
+          medicalHistory: '',
+          urgencyLevel: 'medium'
+        })
+      } else {
+        const errorData = await response.json()
+        alert(errorData.message || 'Failed to book appointment')
+      }
+    } catch (error) {
+      console.error('Error booking appointment:', error)
+      alert('Failed to book appointment. Please try again.')
+    } finally {
+      setBookingAppointment(false)
+    }
   }
 
   if (loading) {
@@ -295,7 +381,7 @@ export const UserDashboard = () => {
               </div>
             </div>
             <Button 
-              onClick={() => window.location.href = '/dashboard/user/diet'}
+              onClick={() => navigate('/dashboard/user/diet')}
               className="bg-purple-600 hover:bg-purple-700 text-white flex items-center"
             >
               <ChefHat className="w-5 h-5 mr-2" />
@@ -323,7 +409,7 @@ export const UserDashboard = () => {
               </div>
             </div>
             <Button 
-              onClick={() => window.location.href = '/dashboard/user/community'}
+              onClick={() => navigate('/dashboard/user/community')}
               className="bg-blue-600 hover:bg-blue-700 text-white flex items-center"
             >
               <Users className="w-5 h-5 mr-2" />
@@ -467,25 +553,134 @@ export const UserDashboard = () => {
           </Card>
         )}
       </div>
-      <Modal isOpen={showAppointmentModal} onClose={() => setShowAppointmentModal(false)}>
+      <Modal open={showAppointmentModal} onClose={() => setShowAppointmentModal(false)}>
         <div className="p-6">
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Book Doctor Appointment</h2>
           <div className="space-y-4">
-            <Input label="Preferred Date" type="date" />
-            <Input label="Preferred Time" type="time" />
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Reason for Visit
+                Select Doctor *
+              </label>
+              <select
+                value={appointmentForm.doctorId}
+                onChange={(e) => handleAppointmentFormChange('doctorId', e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
+                required
+              >
+                <option value="">Select a doctor...</option>
+                {availableDoctors.map(doctor => (
+                  <option key={doctor.id} value={doctor.id}>
+                    Dr. {doctor.name} - {doctor.specialization} (₹{doctor.consultationFee})
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Appointment Type *
+              </label>
+              <select
+                value={appointmentForm.appointmentType}
+                onChange={(e) => handleAppointmentFormChange('appointmentType', e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
+              >
+                <option value="online">Online Consultation</option>
+                <option value="in-person">In-Person Visit</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Input 
+                  label="Preferred Date *" 
+                  type="date" 
+                  value={appointmentForm.appointmentDate}
+                  onChange={(e) => handleAppointmentFormChange('appointmentDate', e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Input 
+                  label="Preferred Time *" 
+                  type="time" 
+                  value={appointmentForm.appointmentTime}
+                  onChange={(e) => handleAppointmentFormChange('appointmentTime', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Urgency Level
+              </label>
+              <select
+                value={appointmentForm.urgencyLevel}
+                onChange={(e) => handleAppointmentFormChange('urgencyLevel', e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
+              >
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Symptoms/Reason for Visit *
               </label>
               <textarea 
                 className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
                 rows="3"
-                placeholder="Brief description of your concern..."
+                placeholder="Describe your symptoms or reason for visit..."
+                value={appointmentForm.symptoms}
+                onChange={(e) => handleAppointmentFormChange('symptoms', e.target.value)}
+                required
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Current Medications (if any)
+              </label>
+              <textarea 
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
+                rows="2"
+                placeholder="List current medications, separated by commas..."
+                value={appointmentForm.currentMedication}
+                onChange={(e) => handleAppointmentFormChange('currentMedication', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Medical History (if relevant)
+              </label>
+              <textarea 
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
+                rows="2"
+                placeholder="Any relevant medical history..."
+                value={appointmentForm.medicalHistory}
+                onChange={(e) => handleAppointmentFormChange('medicalHistory', e.target.value)}
+              />
+            </div>
+
             <div className="flex space-x-3 pt-4">
-              <Button onClick={() => setShowAppointmentModal(false)} className="bg-primary hover:bg-primary/90">
-                Book Appointment
+              <Button 
+                onClick={submitAppointment} 
+                disabled={bookingAppointment}
+                className="bg-primary hover:bg-primary/90 disabled:opacity-50"
+              >
+                {bookingAppointment ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Booking...
+                  </div>
+                ) : (
+                  'Book Appointment'
+                )}
               </Button>
               <Button variant="outline" onClick={() => setShowAppointmentModal(false)}>
                 Cancel

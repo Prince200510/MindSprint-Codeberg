@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Stethoscope, Shield, Clock, Users, Star, ArrowRight, Menu, X, CheckCircle, Phone, Mail, MapPin, User, Sun, Moon, LogIn } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { ChevronDown, Stethoscope, Shield, Clock, Users, Star, ArrowRight, Menu, X, CheckCircle, Phone, Mail, MapPin, User, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const features = [
@@ -58,7 +57,7 @@ export default function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
-  const { theme, toggle } = useTheme();
+  const [showRoleModal, setShowRoleModal] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -71,14 +70,21 @@ export default function Landing() {
       if (showLoginDropdown && !event.target.closest('.login-dropdown')) {
         setShowLoginDropdown(false);
       }
+      if (showRoleModal && !event.target.closest('.role-modal')) {
+        setShowRoleModal(false);
+      }
     };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [showLoginDropdown]);
+  }, [showLoginDropdown, showRoleModal]);
 
   const scrollToSection = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setIsMenuOpen(false);
+  };
+
+  const handleGetStarted = () => {
+    setShowRoleModal(true);
   };
 
   return (
@@ -101,19 +107,6 @@ export default function Landing() {
               <button onClick={() => scrollToSection('features')} className="hover:text-primary transition-colors font-medium">Features</button>
               <button onClick={() => scrollToSection('testimonials')} className="hover:text-primary transition-colors font-medium">Testimonials</button>
               <button onClick={() => scrollToSection('contact')} className="hover:text-primary transition-colors font-medium">Contact</button>
-              <button 
-                onClick={toggle}
-                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors relative group border border-slate-200 dark:border-slate-600"
-                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              >
-                {theme === 'light' ? (
-                  <Moon className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors" />
-                ) : (
-                  <Sun className="w-5 h-5 text-yellow-500 group-hover:text-yellow-400 transition-colors" />
-                )}
-                <span className="sr-only">{theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}</span>
-              </button>
               <div className="relative login-dropdown">
                 <button 
                   onClick={() => setShowLoginDropdown(!showLoginDropdown)}
@@ -153,7 +146,10 @@ export default function Landing() {
                 )}
               </div>
 
-              <button className="px-6 py-3 bg-gradient-to-r from-primary to-primary/90 text-white rounded-full hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:scale-105 font-medium">
+              <button 
+                onClick={handleGetStarted}
+                className="px-6 py-3 bg-gradient-to-r from-primary to-primary/90 text-white rounded-full hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:scale-105 font-medium"
+              >
                 Get Started
               </button>
             </div>
@@ -172,17 +168,6 @@ export default function Landing() {
                 <button onClick={() => scrollToSection('features')} className="text-left hover:text-primary transition-colors font-medium py-2">Features</button>
                 <button onClick={() => scrollToSection('testimonials')} className="text-left hover:text-primary transition-colors font-medium py-2">Testimonials</button>
                 <button onClick={() => scrollToSection('contact')} className="text-left hover:text-primary transition-colors font-medium py-2">Contact</button>
-                <button 
-                  onClick={toggle}
-                  className="flex items-center space-x-3 py-2 px-3 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors font-medium group border border-slate-200 dark:border-slate-600"
-                >
-                  {theme === 'light' ? (
-                    <Moon className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors" />
-                  ) : (
-                    <Sun className="w-5 h-5 text-yellow-500 group-hover:text-yellow-400 transition-colors" />
-                  )}
-                  <span className="text-slate-700 dark:text-slate-200">{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
-                </button>
 
                 <div className="border-t border-slate-200 dark:border-slate-600 pt-4 mt-4">
                   <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mb-3">Login Options:</p>
@@ -214,7 +199,10 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <button className="px-6 py-3 bg-gradient-to-r from-primary to-primary/90 text-white rounded-full hover:shadow-lg transition-all w-fit font-medium">
+                <button 
+                  onClick={handleGetStarted}
+                  className="px-6 py-3 bg-gradient-to-r from-primary to-primary/90 text-white rounded-full hover:shadow-lg transition-all w-fit font-medium"
+                >
                   Get Started
                 </button>
               </div>
@@ -245,7 +233,10 @@ export default function Landing() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-6 items-start">
-                <button className="group px-12 py-6 bg-gradient-to-r from-primary to-primary/90 text-white rounded-2xl text-xl font-bold hover:shadow-2xl hover:shadow-primary/30 transition-all transform hover:scale-105 flex items-center space-x-4 shadow-xl">
+                <button 
+                  onClick={handleGetStarted}
+                  className="group px-12 py-6 bg-gradient-to-r from-primary to-primary/90 text-white rounded-2xl text-xl font-bold hover:shadow-2xl hover:shadow-primary/30 transition-all transform hover:scale-105 flex items-center space-x-4 shadow-xl"
+                >
                   <span>Get Started Free</span>
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -626,7 +617,10 @@ export default function Landing() {
             Join thousands of patients and healthcare providers who trust MediTrack for their medication management needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <button className="px-12 py-5 bg-white dark:bg-slate-200 text-primary dark:text-primary font-bold text-xl rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-300 transition-colors transform hover:scale-105 shadow-2xl hover:shadow-white/20 dark:hover:shadow-slate-200/20">
+            <button 
+              onClick={handleGetStarted}
+              className="px-12 py-5 bg-white dark:bg-slate-200 text-primary dark:text-primary font-bold text-xl rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-300 transition-colors transform hover:scale-105 shadow-2xl hover:shadow-white/20 dark:hover:shadow-slate-200/20"
+            >
               Start Free Trial
             </button>
             <button className="px-12 py-5 border-2 border-white dark:border-slate-200 text-white dark:text-slate-200 font-bold text-xl rounded-2xl hover:bg-white dark:hover:bg-slate-200 hover:text-primary dark:hover:text-primary transition-all transform hover:scale-105 backdrop-blur-sm">
@@ -711,6 +705,78 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Role Selection Modal */}
+      {showRoleModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="role-modal bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-slate-200 dark:border-slate-600">
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Stethoscope className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
+                  Choose Your Role
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Select how you want to use MediTrack
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <Link 
+                  to="/auth?role=patient"
+                  className="block w-full p-6 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl border border-green-200 dark:border-green-700 hover:border-green-300 dark:hover:border-green-600 transition-all group hover:shadow-lg"
+                  onClick={() => setShowRoleModal(false)}
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-green-800 dark:text-green-300 group-hover:text-green-900 dark:group-hover:text-green-200 transition-colors">
+                        I'm a Patient
+                      </h3>
+                      <p className="text-green-600 dark:text-green-400 text-sm">
+                        Manage prescriptions and health records
+                      </p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                <Link 
+                  to="/auth?role=doctor"
+                  className="block w-full p-6 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl border border-blue-200 dark:border-blue-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all group hover:shadow-lg"
+                  onClick={() => setShowRoleModal(false)}
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Stethoscope className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-blue-800 dark:text-blue-300 group-hover:text-blue-900 dark:group-hover:text-blue-200 transition-colors">
+                        I'm a Doctor
+                      </h3>
+                      <p className="text-blue-600 dark:text-blue-400 text-sm">
+                        Manage patients and prescriptions
+                      </p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              </div>
+
+              <button
+                onClick={() => setShowRoleModal(false)}
+                className="w-full mt-6 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

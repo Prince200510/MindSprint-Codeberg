@@ -232,9 +232,76 @@ const getUserComments = async (req, res, next) => {
   });
 };
 
+const deleteComment = async (req, res, next) => {
+  console.log("log> DELETE req in `/comments/:commentId`");
+
+  const commentId = req.params.commentId;
+  const { userId } = req.body;
+
+  let comment;
+  try {
+    comment = await Comment.findById(commentId).populate('commenter', '_id');
+  } catch (err) {
+    const error = new HttpError(
+      `Something went wrong while finding comment. Error: ${err}`,
+      500
+    );
+    console.log(`log> Error finding comment: ${err}`);
+    return next(error);
+  }
+
+  if (!comment) {
+    const error = new HttpError("Could not find comment with the provided id.", 404);
+    return next(error);
+  }
+
+  // Check if the user is the comment author
+  if (comment.commenter._id.toString() !== userId) {
+    const error = new HttpError("Not authorized to delete this comment.", 403);
+    return next(error);
+  }
+
+  try {
+    const session = await startSession();
+    session.startTransaction();
+    
+    // Remove comment from comment collection
+    await Comment.findByIdAndDelete(commentId, { session });
+    
+    // Remove comment reference from user
+    const user = await User.findById(userId).session(session);
+    if (user && user.comments) {
+      user.comments.pull(commentId);
+      await user.save({ session });
+    }
+    
+    // Remove comment reference from post
+    const post = await Post.findById(comment.post).session(session);
+    if (post && post.comments) {
+      post.comments.pull(commentId);
+      await post.save({ session });
+    }
+    
+    await session.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      `Could not delete comment. Error: ${err}`,
+      500
+    );
+    console.log(`log> Could not delete comment: ${err}`);
+    return next(error);
+  }
+
+  res.status(200).json({
+    message: "Comment deleted successfully.",
+    deletedCommentId: commentId
+  });
+};
+
 export {
   getAllComments,
   createComment,
   getPostCommentsByPostId,
   getUserComments,
+  deleteComment,
 };

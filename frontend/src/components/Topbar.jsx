@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { useTheme } from '../context/ThemeContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sun,  Moon,  Bell,  Search,  Settings,  User,  LogOut,  Shield, ChevronDown, Stethoscope, CheckCircle2, X, Clock, Calendar} from 'lucide-react'
+import { Bell,  Search,  Settings,  User,  LogOut,  Shield, ChevronDown, Stethoscope, CheckCircle2, X, Clock, Calendar} from 'lucide-react'
 
 export const Topbar = () => {
-  const { toggle, theme } = useTheme()
   const { user, logout } = useAuth()
   const { notifications, unreadCount, markAsRead, removeNotification } = useNotifications()
   const navigate = useNavigate()
@@ -69,18 +67,6 @@ export const Topbar = () => {
         </div>
       </div>
       <div className="flex items-center space-x-1 sm:space-x-4">
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={toggle} 
-          className="p-1.5 sm:p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-          aria-label="Toggle theme"
-        >
-          {theme === 'light' ? 
-            <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" /> : 
-            <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-          }
-        </motion.button>
         <div className="relative" ref={notificationRef}>
           <motion.button 
             ref={notificationButtonRef}
@@ -302,11 +288,33 @@ export const Topbar = () => {
                   </div>
                   
                   <div className="py-1">
-                    <button className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <button 
+                      onClick={() => {
+                        const settingsPath = user.role === 'user' 
+                          ? '/dashboard/user/settings'
+                          : user.role === 'doctor'
+                          ? '/dashboard/doctor/settings'
+                          : '/dashboard/admin/settings'
+                        navigate(settingsPath)
+                        setShowProfile(false)
+                      }}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
                       <User className="w-4 h-4" />
                       <span>Profile Settings</span>
                     </button>
-                    <button className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <button 
+                      onClick={() => {
+                        const settingsPath = user.role === 'user' 
+                          ? '/dashboard/user/settings'
+                          : user.role === 'doctor'
+                          ? '/dashboard/doctor/settings'
+                          : '/dashboard/admin/settings'
+                        navigate(settingsPath)
+                        setShowProfile(false)
+                      }}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
                       <Settings className="w-4 h-4" />
                       <span>Preferences</span>
                     </button>

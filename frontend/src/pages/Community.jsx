@@ -25,7 +25,7 @@ const nav = [
 ]
 
 // PostCard component moved outside to prevent re-renders
-const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommentChange, handleCommentSubmit, user, expandedComments, toggleComments }) => (
+const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommentChange, handleCommentSubmit, user, expandedComments, toggleComments, handleCommentDelete }) => (
   <div>
     <Card className="mb-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
       <div className="p-6">
@@ -106,13 +106,26 @@ const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommen
                       {comment.commenter?.name?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="flex-1 bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-sm font-medium text-slate-800 dark:text-white">
-                          {comment.commenter?.name || 'Anonymous User'}
-                        </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          {new Date(comment.createdAt).toLocaleString()}
-                        </span>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-slate-800 dark:text-white">
+                            {comment.commenter?.name || 'Anonymous User'}
+                          </span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                            {new Date(comment.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                        {/* Delete button - only show for comment author */}
+                        {(comment.commenter?._id === user?._id || comment.commenter?.id === user?.id) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCommentDelete(comment._id, post._id)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 h-auto"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
                       </div>
                       <p className="text-sm text-slate-600 dark:text-slate-300">
                         {comment.content}
@@ -435,6 +448,45 @@ export const Community = () => {
     }
   }, [postComments, user, API_BASE, selectedGroup])
 
+  const handleCommentDelete = useCallback(async (commentId, postId) => {
+    try {
+      const response = await fetch(`${API_BASE}/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          userId: user._id || user.id 
+        })
+      })
+
+      if (response.ok) {
+        // Update the posts list by removing the deleted comment
+        setPosts(prev => prev.map(post => 
+          post._id === postId 
+            ? { 
+                ...post, 
+                comments: post.comments.filter(comment => comment._id !== commentId) 
+              }
+            : post
+        ))
+        
+        showNotification('Comment deleted successfully!', 'success')
+        
+        // Refresh posts to get updated comment count
+        if (selectedGroup) {
+          fetchGroupPosts(selectedGroup._id)
+        }
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to delete comment')
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      showNotification('Failed to delete comment', 'error')
+    }
+  }, [user, API_BASE, selectedGroup])
+
   const toggleComments = useCallback((postId) => {
     setExpandedComments(prev => {
       const newExpanded = new Set(prev)
@@ -689,6 +741,7 @@ export const Community = () => {
                       postComments={postComments}
                       handleCommentChange={handleCommentChange}
                       handleCommentSubmit={handleCommentSubmit}
+                      handleCommentDelete={handleCommentDelete}
                       user={user}
                       expandedComments={expandedComments}
                       toggleComments={toggleComments}

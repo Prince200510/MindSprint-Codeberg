@@ -12,7 +12,7 @@ const uploadOnCloudinary = async (imageFileLocalPath) => {
   if (!imageFileLocalPath) {
     const error = new HttpError(
       "`imageFileLocalPath` is not present - cloudinary.js - uploadOnCloudinary()",
-      400 // correct this code
+      400 
     );
     console.log(`log> Error: ${error.message}`);
 
@@ -20,18 +20,14 @@ const uploadOnCloudinary = async (imageFileLocalPath) => {
   }
 
   try {
-    // upload the file on cloudinary
     const response = await cloudinary.uploader.upload(imageFileLocalPath, {
       resource_type: "auto",
     });
 
-    // file has been uploaded successfully
     console.log("log> Image file is uploaded on cloudinary successfully.");
     console.log("log> URL:", response.url);
     console.log("log> response:-");
     console.log(response);
-
-    // removing the locally saved temporary file synchronously as the upload operation succeeded
     fs.unlinkSync(imageFileLocalPath);
     console.log(
       "log> Removed the locally saved temporary image file synchronously as the upload operation succeeded - cloudinary.js - uploadOnCloudinary()"
@@ -41,12 +37,10 @@ const uploadOnCloudinary = async (imageFileLocalPath) => {
   } catch (err) {
     const error = new HttpError(
       `Something went wrong uploadOnCloudinary FAILED!!!\nError: ${err} - cloudinary.js - uploadOnCloudinary()`,
-      400 // correct this code
+      400 
     );
 
     console.log(`log> Error: ${error.message}`);
-
-    // removing the locally saved temporary file synchronously as the upload operation got failed
     fs.unlinkSync(imageFileLocalPath);
     console.log(
       "log> Removed the locally saved temporary image file synchronously as the upload operation got failed - cloudinary.js - uploadOnCloudinary()"
@@ -58,14 +52,14 @@ const uploadOnCloudinary = async (imageFileLocalPath) => {
 
 const deleteFromCloudinary = async (imageUrl) => {
   let imageUrlArray = imageUrl.split("/");
-  let imageFilename = imageUrlArray[imageUrlArray.length - 1]; // "tklrxe042qhb5kmu1n9n.jpg"
-  const imageId = imageFilename.split(".")[0]; // "tklrxe042qhb5kmu1n9n"
+  let imageFilename = imageUrlArray[imageUrlArray.length - 1]; 
+  const imageId = imageFilename.split(".")[0];
   console.log("imageId:", imageId);
 
   if (!imageId) {
     const error = new HttpError(
       "Cloud not get imageId from imageUrl - cloudinary.js - deleteFromCloudinary()",
-      400 // correct this code
+      400 
     );
     console.log(`log> Error: ${error.message}`);
 
@@ -79,7 +73,7 @@ const deleteFromCloudinary = async (imageUrl) => {
   } catch (err) {
     const error = new HttpError(
       `Something went wrong! failed to delete image from Cloudinary\nError: ${err} - cloudinary.js - deleteFromCloudinary()`,
-      400 // correct this code
+      400 
     );
     console.log(`log> Error: ${error.message}`);
 

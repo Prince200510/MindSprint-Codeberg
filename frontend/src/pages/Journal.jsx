@@ -1,14 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Calendar,
-  ChefHat,
-  Edit3,
-  Heart,
-  Pill,
-  Stethoscope,
-  User,
-  Users,
-} from "lucide-react";
+import { Calendar, ChefHat, Edit3, Heart, Pill, Stethoscope, User, Users,} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card } from "../components/Card.jsx";
 import { Layout } from "../components/Layout.jsx";
@@ -49,11 +40,10 @@ const itemVariants = {
 export const Journal = () => {
   const { user } = useAuth();
   const { addNotification } = useNotifications();
-
   const [text, setText] = useState("");
   const [supportMessage, setSupportMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [journals, setJournals] = useState([]);
   const [analyses, setAnalyses] = useState([]);
 
@@ -72,7 +62,6 @@ export const Journal = () => {
     }
   };
 
-  // Add a new journal entry
   const addJournal = async (data) => {
     if (!data || !data.userId || !data.text || !data.text.trim()) {
       throw new Error("Invalid journal data: userId and text are required.");
@@ -103,7 +92,6 @@ export const Journal = () => {
     }
   };
 
-  // Get all journals for a user
   const getJournals = async (userId) => {
     if (!userId) {
       throw new Error("User ID is required to fetch journals.");
@@ -138,32 +126,36 @@ export const Journal = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() || isLoading) return;
 
+    setIsLoading(true);
+    
     try {
       const res = await addJournal({
         userId: user.id,
         text,
       });
 
-      console.log("Journal added:", res); // Debugging line
-
+      console.log("Journal added:", res); 
       setText("");
-
-      // Fixed destructuring here – fetch API returns parsed JSON directly
       const { journal, analysis, supportMessage } = res;
-
       setJournals((prev) => [journal, ...prev]);
-      setAnalyses((prev) => [analysis, ...prev]);
+      if (analysis) {
+        setAnalyses((prev) => [analysis, ...prev]);
+      }
 
       if (supportMessage) {
         setSupportMessage(supportMessage);
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 6000);
+      } else {
+        addNotification("Journal entry saved successfully! AI analysis is being processed.", "success");
       }
     } catch (err) {
       console.error(err);
-      alert("Error saving journal");
+      addNotification(err.message || "Error saving journal", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -192,7 +184,6 @@ export const Journal = () => {
         animate="visible"
         className="space-y-6"
       >
-        {/* Header */}
         <motion.div
           variants={itemVariants}
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
@@ -207,8 +198,6 @@ export const Journal = () => {
             </p>
           </div>
         </motion.div>
-
-        {/* Journal Form */}
         <motion.div variants={itemVariants}>
           <Card className="p-6">
             <form onSubmit={handleFormSubmit}>
@@ -216,20 +205,48 @@ export const Journal = () => {
                 placeholder="Write your journal entry..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                disabled={isLoading}
                 rows={4}
-                className="w-full p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className={`w-full p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition ${
+                  isLoading ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
+                }`}
               />
               <button
                 type="submit"
-                className="mt-3 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition"
+                disabled={isLoading || !text.trim()}
+                className={`mt-3 px-5 py-2 text-white font-medium rounded-lg shadow-md transition flex items-center space-x-2 ${
+                  isLoading || !text.trim()
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
               >
-                Save Entry
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Entry</span>
+                )}
               </button>
             </form>
           </Card>
         </motion.div>
-
-        {/* Support Popup */}
         <AnimatePresence>
           {showPopup && (
             <motion.div
@@ -253,8 +270,6 @@ export const Journal = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Journal List */}
         <motion.div variants={itemVariants}>
           <Card className="p-6 bg-gradient-to-br from-gray-900 to-gray-800">
             <h2 className="text-2xl font-bold mb-6 text-white flex items-center space-x-3 border-b border-gray-700 pb-4">

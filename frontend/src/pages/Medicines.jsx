@@ -9,7 +9,6 @@ import { Pill,  Plus,  Edit3,  Trash2, CheckCircle2, Loader2, Calendar, Clock, I
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
 
-// Move nav array outside component to prevent re-renders
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
   {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},

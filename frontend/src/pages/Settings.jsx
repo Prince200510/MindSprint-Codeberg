@@ -43,7 +43,7 @@ export const Settings = () => {
   const [modalSuccessMessage, setModalSuccessMessage] = useState('')
   const [modalErrorMessage, setModalErrorMessage] = useState('')
 
-  const nav = [
+  const nav = user?.role === 'user' ? [
     {to:'/dashboard/user', label:'Overview'},
     {to:'/dashboard/user/prescriptions', label:'Prescriptions'},
     {to:'/dashboard/user/medicines', label:'Medicines'},
@@ -51,6 +51,12 @@ export const Settings = () => {
     {to:'/dashboard/user/analytics', label:'Analytics'},
     {to:'/dashboard/user/chat', label:'Chat'},
     {to:'/dashboard/user/settings', label:'Settings'}
+  ] : user?.role === 'doctor' ? [
+    {to:'/dashboard/doctor', label:'Appointments'},
+    {to:'/dashboard/doctor/settings', label:'Settings'}
+  ] : [
+    {to:'/dashboard/admin', label:'Overview'},
+    {to:'/dashboard/admin/settings', label:'Settings'}
   ]
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
