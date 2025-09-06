@@ -385,6 +385,9 @@ export const AvailableDoctors = () => {
                          mode === 'offline' ? 'In-Person Visit' : 'Chat Consultation'}
                       </option>
                     ))}
+                    {(selectedDoctor.consultationModes.includes('online') || selectedDoctor.consultationModes.includes('chat')) && (
+                      <option value="virtual">Online Virtual Meeting</option>
+                    )}
                   </select>
                 </div>
 

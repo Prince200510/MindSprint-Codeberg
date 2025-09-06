@@ -4,6 +4,12 @@ import { Card } from '../../components/Card.jsx'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { Users,  UserCheck,  Activity,  TrendingUp,  AlertTriangle, CheckCircle2, Clock, Shield, Stethoscope, Heart, Database, Server, BarChart3, PieChart, Calendar, Mail, Settings, UserX, UserPlus, Bell, Download, Filter, Search, RefreshCw, Eye, Edit, Trash2, MoreVertical, LogOut, User, FileText} from 'lucide-react'
+import { 
+  UserGrowthChart, 
+  UserDistributionChart, 
+  DoctorSpecializationChart, 
+  MonthlyTrendsChart 
+} from '../../components/Charts.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const SERVER_BASE = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000'
@@ -46,6 +52,14 @@ export const AdminDashboard = () => {
     diskUsage: 38,
     networkLoad: 23
   })
+
+  // Chart data states
+  const [userGrowthData, setUserGrowthData] = useState([])
+  const [userDistributionData, setUserDistributionData] = useState(null)
+  const [chartsLoading, setChartsLoading] = useState(true)
+  const [realTimeSystemHealth, setRealTimeSystemHealth] = useState(null)
+  const [systemHealthLoading, setSystemHealthLoading] = useState(true)
+  const [autoRefresh, setAutoRefresh] = useState(true)
 
   const nav = [
     { to: '/dashboard/admin', label: 'Overview', icon: BarChart3 },
@@ -110,14 +124,86 @@ export const AdminDashboard = () => {
     }
   }
 
+  const fetchUserGrowthData = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/analytics/admin/user-growth`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUserGrowthData(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user growth data:', error)
+    }
+  }
+
+  const fetchUserDistributionData = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/analytics/admin/user-distribution`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUserDistributionData(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user distribution data:', error)
+    }
+  }
+
+  const fetchSystemHealthData = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/analytics/admin/system-health`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setRealTimeSystemHealth(data.data)
+        
+        // Update the legacy systemMetrics state for backward compatibility
+        if (data.data && data.data.metrics) {
+          setSystemMetrics({
+            cpuUsage: data.data.metrics.cpuUsage,
+            memoryUsage: data.data.metrics.memoryUsage,
+            diskUsage: data.data.metrics.diskUsage,
+            networkLoad: data.data.metrics.networkLoad
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch system health data:', error)
+    } finally {
+      setSystemHealthLoading(false)
+    }
+  }
+
   const refreshData = async () => {
     setLoading(true)
+    setChartsLoading(true)
+    setSystemHealthLoading(true)
     await Promise.all([
       fetchDashboardStats(),
       fetchRecentActivity(),
-      fetchPendingDoctors()
+      fetchPendingDoctors(),
+      fetchUserGrowthData(),
+      fetchUserDistributionData(),
+      fetchSystemHealthData()
     ])
     setLoading(false)
+    setChartsLoading(false)
   }
 
   const handleApproveDoctor = async (doctorId) => {
@@ -141,7 +227,7 @@ export const AdminDashboard = () => {
       setApproving(false)
     }
   }
-  
+
   const handleRejectDoctor = async (doctorId) => {
     const reason = prompt('Please provide a reason for rejection:')
     if (!reason) return
@@ -173,6 +259,36 @@ export const AdminDashboard = () => {
       refreshData()
     }
   }, [token])
+
+  // Auto-refresh system health every 30 seconds
+  useEffect(() => {
+    let interval = null;
+    if (autoRefresh && token) {
+      interval = setInterval(() => {
+        fetchSystemHealthData();
+      }, 30000); // Refresh every 30 seconds
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [autoRefresh, token])
+
+  // Auto-refresh all data every 5 minutes
+  useEffect(() => {
+    let interval = null;
+    if (autoRefresh && token) {
+      interval = setInterval(() => {
+        refreshData();
+      }, 300000); // Refresh every 5 minutes
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [autoRefresh, token])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -257,16 +373,27 @@ export const AdminDashboard = () => {
     )
   }
 
-  const SystemMetric = ({ label, value, color = "bg-primary" }) => (
+  const SystemMetric = ({ label, value, color = "bg-primary", icon: Icon, status }) => (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{label}</span>
-        <span className="text-sm font-bold text-slate-900 dark:text-white">{value}%</span>
+        <div className="flex items-center space-x-2">
+          {Icon && <Icon className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{label}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-bold text-slate-900 dark:text-white">{value}%</span>
+          {status && (
+            <div className={`w-2 h-2 rounded-full ${
+              status === 'healthy' ? 'bg-green-500' :
+              status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+            }`} />
+          )}
+        </div>
       </div>
-      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
         <div 
-          className={`h-2 rounded-full ${color} transition-all duration-500`}
-          style={{ width: `${value}%` }}
+          className={`h-2.5 rounded-full ${color} transition-all duration-1000 ease-in-out`}
+          style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
         ></div>
       </div>
     </div>
@@ -732,22 +859,125 @@ export const AdminDashboard = () => {
           <motion.div variants={itemVariants}>
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">System Health</h3>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-green-600 font-medium">Healthy</span>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">System Health</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Real-time system monitoring • Auto-refresh: {autoRefresh ? 'ON' : 'OFF'}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => setAutoRefresh(!autoRefresh)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      autoRefresh 
+                        ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
+                        : 'bg-gray-100 text-gray-600 dark:bg-gray-900/20 dark:text-gray-400'
+                    }`}
+                    title={autoRefresh ? 'Disable auto-refresh' : 'Enable auto-refresh'}
+                  >
+                    <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin' : ''}`} />
+                  </button>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${
+                      systemHealthLoading ? 'bg-yellow-500' :
+                      realTimeSystemHealth?.services?.database?.status === 'healthy' ? 'bg-green-500' : 'bg-red-500'
+                    }`}></div>
+                    <span className={`text-sm font-medium ${
+                      systemHealthLoading ? 'text-yellow-600' :
+                      realTimeSystemHealth?.services?.database?.status === 'healthy' ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {systemHealthLoading ? 'Loading...' : 
+                       realTimeSystemHealth?.services?.database?.status === 'healthy' ? 'Healthy' : 'Issues'}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4">
-                <SystemMetric label="CPU Usage" value={systemMetrics.cpuUsage} color="bg-blue-500" />
-                <SystemMetric label="Memory" value={systemMetrics.memoryUsage} color="bg-green-500" />
-                <SystemMetric label="Storage" value={systemMetrics.diskUsage} color="bg-yellow-500" />
-                <SystemMetric label="Network" value={systemMetrics.networkLoad} color="bg-purple-500" />
-              </div>
+
+              {systemHealthLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24"></div>
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-12"></div>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                        <div className="h-2.5 bg-slate-300 dark:bg-slate-600 rounded-full w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <SystemMetric 
+                    label="CPU Usage" 
+                    value={realTimeSystemHealth?.metrics?.cpuUsage || systemMetrics.cpuUsage} 
+                    color="bg-blue-500" 
+                    icon={Server}
+                    status={realTimeSystemHealth?.metrics?.cpuUsage > 80 ? 'warning' : 'healthy'}
+                  />
+                  <SystemMetric 
+                    label="Memory" 
+                    value={realTimeSystemHealth?.metrics?.memoryUsage || systemMetrics.memoryUsage} 
+                    color="bg-green-500" 
+                    icon={Database}
+                    status={realTimeSystemHealth?.metrics?.memoryUsage > 85 ? 'warning' : 'healthy'}
+                  />
+                  <SystemMetric 
+                    label="Storage" 
+                    value={realTimeSystemHealth?.metrics?.diskUsage || systemMetrics.diskUsage} 
+                    color="bg-yellow-500" 
+                    icon={Database}
+                    status={realTimeSystemHealth?.metrics?.diskUsage > 90 ? 'warning' : 'healthy'}
+                  />
+                  <SystemMetric 
+                    label="Network" 
+                    value={realTimeSystemHealth?.metrics?.networkLoad || systemMetrics.networkLoad} 
+                    color="bg-purple-500" 
+                    icon={Activity}
+                    status="healthy"
+                  />
+                </div>
+              )}
+
               <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Uptime</span>
-                  <span className="text-sm font-bold text-green-600">{stats.systemUptime}</span>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Uptime</span>
+                    <span className="text-sm font-bold text-green-600">
+                      {realTimeSystemHealth?.metrics?.uptime || stats.systemUptime}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">DB Response</span>
+                    <span className="text-sm font-bold text-blue-600">
+                      {realTimeSystemHealth?.services?.database?.responseTime || '<100ms'}
+                    </span>
+                  </div>
+                </div>
+                
+                {realTimeSystemHealth?.performance && (
+                  <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Requests/min</span>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium">
+                        {realTimeSystemHealth.performance.requestsPerMinute}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Active Connections</span>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium">
+                        {realTimeSystemHealth.performance.activeConnections}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-4 text-xs text-slate-400 dark:text-slate-500 text-center">
+                  Last updated: {realTimeSystemHealth?.timestamp ? 
+                    new Date(realTimeSystemHealth.timestamp).toLocaleTimeString() : 
+                    'Never'
+                  }
                 </div>
               </div>
             </Card>
@@ -827,28 +1057,136 @@ export const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div variants={itemVariants}>
             <Card className="p-6">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">User Growth</h3>
-              <div className="h-64 bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <BarChart3 className="w-12 h-12 text-primary mx-auto mb-2" />
-                  <p className="text-slate-600 dark:text-slate-400">Chart visualization would go here</p>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">User Growth</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Monthly user registration trends over the last 12 months
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Live Data</span>
                 </div>
               </div>
+              <UserGrowthChart data={userGrowthData} loading={chartsLoading} />
+              {userGrowthData.length > 0 && !chartsLoading && (
+                <div className="mt-4 grid grid-cols-3 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">
+                      {userGrowthData[userGrowthData.length - 1]?.totalUsers?.toLocaleString() || '0'}
+                    </p>
+                    <p className="text-xs text-slate-500">Total Users</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-green-600">
+                      +{userGrowthData[userGrowthData.length - 1]?.newUsers || '0'}
+                    </p>
+                    <p className="text-xs text-slate-500">This Month</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-blue-600">
+                      {Math.round(userGrowthData.reduce((sum, month) => sum + (month.newUsers || 0), 0) / 12)}
+                    </p>
+                    <p className="text-xs text-slate-500">Monthly Avg</p>
+                  </div>
+                </div>
+              )}
             </Card>
           </motion.div>
           
           <motion.div variants={itemVariants}>
             <Card className="p-6">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">User Distribution</h3>
-              <div className="h-64 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <PieChart className="w-12 h-12 text-green-600 mx-auto mb-2" />
-                  <p className="text-slate-600 dark:text-slate-400">Pie chart visualization would go here</p>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">User Distribution</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Distribution of users by role across the platform
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                  <PieChart className="w-4 h-4" />
+                  <span>Live Data</span>
                 </div>
               </div>
+              <UserDistributionChart data={userDistributionData} loading={chartsLoading} />
+              {userDistributionData && !chartsLoading && (
+                <div className="mt-4 grid grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Patients</span>
+                      <span className="text-sm font-medium text-slate-900 dark:text-white">
+                        {userDistributionData.summary?.totalPatients || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Doctors</span>
+                      <span className="text-sm font-medium text-slate-900 dark:text-white">
+                        {userDistributionData.summary?.totalDoctors || 0}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Approved Doctors</span>
+                      <span className="text-sm font-medium text-green-600">
+                        {userDistributionData.summary?.approvedDoctors || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Pending Approval</span>
+                      <span className="text-sm font-medium text-orange-600">
+                        {userDistributionData.summary?.pendingDoctors || 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Card>
           </motion.div>
         </div>
+
+        {/* Additional Analytics Section */}
+        {userDistributionData && userDistributionData.specializationDistribution && userDistributionData.specializationDistribution.length > 0 && (
+          <motion.div variants={itemVariants}>
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Doctor Specializations</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Distribution of doctors by medical specialization
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Stethoscope className="w-4 h-4" />
+                  <span>Top Specializations</span>
+                </div>
+              </div>
+              <DoctorSpecializationChart data={userDistributionData} loading={chartsLoading} />
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Monthly Registration Trends */}
+        {userDistributionData && userDistributionData.monthlyDistribution && userDistributionData.monthlyDistribution.length > 0 && (
+          <motion.div variants={itemVariants}>
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Registration Trends</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    New user registrations over the last 6 months
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+                  <Activity className="w-4 h-4" />
+                  <span>Recent Trends</span>
+                </div>
+              </div>
+              <MonthlyTrendsChart data={userDistributionData} loading={chartsLoading} />
+            </Card>
+          </motion.div>
+        )}
       </motion.div>
     </Layout>
 

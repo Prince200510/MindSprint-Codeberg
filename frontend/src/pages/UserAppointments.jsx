@@ -159,6 +159,7 @@ export const UserAppointments = () => {
             <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Appointment Type</label>
             <p className="text-slate-900 dark:text-white capitalize">
               {appointment.appointmentType === 'online' ? '💻 Online Consultation' : 
+               appointment.appointmentType === 'virtual' ? '🎥 Online Virtual Meeting' :
                appointment.appointmentType === 'offline' ? '🏥 In-Person Visit' : '💬 Chat Consultation'}
             </p>
           </div>
@@ -189,13 +190,23 @@ export const UserAppointments = () => {
             >
               View Details
             </Button>
-            {appointment.appointmentType === 'online' && appointment.status === 'confirmed' && (
+            {(appointment.appointmentType === 'online' || appointment.appointmentType === 'virtual') && appointment.status === 'confirmed' && (
               <Button
                 size="sm"
                 className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => {
+                  if (appointment.appointmentType === 'virtual') {
+                    // Generate meeting room link for virtual appointments
+                    const roomId = `appointment-${appointment._id}`;
+                    const meetingLink = `/meeting-room?roomID=${roomId}`;
+                    window.open(meetingLink, '_blank');
+                  } else if (appointment.meetingLink) {
+                    window.open(appointment.meetingLink, '_blank');
+                  }
+                }}
               >
                 <Video className="w-4 h-4 mr-1" />
-                Join Call
+                {appointment.appointmentType === 'virtual' ? 'Join Virtual Meeting' : 'Join Call'}
               </Button>
             )}
           </div>
@@ -357,6 +368,7 @@ export const UserAppointments = () => {
                     <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Type</label>
                     <p className="text-slate-900 dark:text-white capitalize">
                       {selectedAppointment.appointmentType === 'online' ? 'Online Consultation' : 
+                       selectedAppointment.appointmentType === 'virtual' ? 'Online Virtual Meeting' :
                        selectedAppointment.appointmentType === 'offline' ? 'In-Person Visit' : 'Chat Consultation'}
                     </p>
                   </div>
@@ -365,7 +377,72 @@ export const UserAppointments = () => {
                     <p className="text-slate-900 dark:text-white">₹{selectedAppointment.consultationFee}</p>
                   </div>
                 </div>
-              </div><div>
+              </div>
+              {selectedAppointment.appointmentType === 'virtual' && selectedAppointment.status === 'confirmed' && (
+                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border border-green-200 dark:border-green-800">
+                  <h3 className="font-semibold text-green-900 dark:text-green-100 mb-4 flex items-center">
+                    <Video className="w-5 h-5 mr-2" />
+                    Virtual Meeting Information
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-green-700 dark:text-green-300">Meeting Time</label>
+                      <p className="text-green-900 dark:text-green-100 font-medium">
+                        {new Date(selectedAppointment.appointmentDate).toLocaleDateString()} at {selectedAppointment.appointmentTime}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-green-700 dark:text-green-300">Meeting Access</label>
+                      <p className="text-green-800 dark:text-green-200 text-sm mb-2">
+                        Meeting link will be available 15 minutes before your scheduled appointment time.
+                      </p>
+                      {true ? ( 
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            onClick={() => {
+                              const roomId = `appointment-${selectedAppointment._id}`;
+                              const meetingLink = `/meeting-room?roomID=${roomId}`;
+                              window.open(meetingLink, '_blank');
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            size="sm"
+                          >
+                            <Video className="w-4 h-4 mr-2" />
+                            Join Virtual Meeting
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              const roomId = `appointment-${selectedAppointment._id}`;
+                              const meetingLink = `${window.location.origin}/meeting-room?roomID=${roomId}`;
+                              navigator.clipboard.writeText(meetingLink);
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="border-green-600 text-green-600 hover:bg-green-50"
+                          >
+                            Copy Link
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-green-700 dark:text-green-300 text-sm italic">
+                          Meeting link will be generated by the doctor upon confirmation.
+                        </p>
+                      )}
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mt-4">
+                      <h4 className="text-blue-900 dark:text-blue-100 font-medium text-sm mb-2">Meeting Guidelines:</h4>
+                      <ul className="text-blue-800 dark:text-blue-200 text-xs space-y-1">
+                        <li>• Please join 2-3 minutes before the scheduled time</li>
+                        <li>• Ensure you have a stable internet connection</li>
+                        <li>• Test your camera and microphone beforehand</li>
+                        <li>• Only patient and doctor can join this meeting</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div>
                 <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Medical Information</h3>
                 <div className="space-y-3">
                   <div>
@@ -446,7 +523,6 @@ export const UserAppointments = () => {
                 </div>
               ) : null}
 
-              {/* Additional Information Section */}
               {selectedAppointment.status === 'completed' && !selectedAppointment.doctorNotes && !selectedAppointment.prescription && (
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Consultation Summary</h3>

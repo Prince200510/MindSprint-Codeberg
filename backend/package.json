@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --watch server.js",
     "start": "cross-env NODE_ENV=production node server.js",
-    "create-admin": "node scripts/createAdmin.js"
+    "create-admin": "node scripts/createAdmin.js",
+    "create-indian-doctors": "node scripts/createIndianDoctors.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -28,6 +29,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
     "socket.io": "^4.7.5",
+    "systeminformation": "^5.27.8",
     "uuid": "^11.1.0",
     "validator": "^13.11.0"
   },

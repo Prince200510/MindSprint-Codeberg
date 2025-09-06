@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 
 function randomID(len) {
@@ -22,8 +22,13 @@ const MeetingRoom = () => {
   const roomID = getUrlParams().get("roomID") || randomID(5);
 
   const myMeeting = async (element) => {
-    const appID = Number(import.meta.env.VITE_ZEGO_APP_ID);
-    const serverSecret = import.meta.env.VITE_ZEGO_SERVER_SECRET;
+    const appID = Number(import.meta.env.VITE_ZEGO_APP_ID) || 123456789;
+    const serverSecret = import.meta.env.VITE_ZEGO_SERVER_SECRET || "dummy_secret_key";
+
+    if (!appID || !serverSecret) {
+      console.error("ZegoCloud credentials not found");
+      return;
+    }
 
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,

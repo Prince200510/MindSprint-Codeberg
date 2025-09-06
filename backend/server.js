@@ -25,6 +25,7 @@ import postRouter from "./routes/posts.routes.js";
 import commentRouter from "./routes/comments.routes.js";
 
 import journalRoutes from "./routes/journalRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 import { notFound, errorHandler } from "./middleware/error.js";
 import { auth } from "./middleware/auth.js";
@@ -52,6 +53,7 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/diet", dietRoutes);
 app.use("/api/journals", journalRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Social platform routes - maaz
 app.use("/api/users", userRouter);

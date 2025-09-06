@@ -203,7 +203,8 @@ export const DoctorDashboard = () => {
             <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Appointment Type</label>
             <p className="text-slate-900 dark:text-white capitalize">
               {appointment.appointmentType === 'online' ? '💻 Online Consultation' : 
-               appointment.appointmentType === 'offline' ? '🏥 In-Person Visit' : '💬 Chat Consultation'}
+               appointment.appointmentType === 'offline' ? '🏥 In-Person Visit' : 
+               appointment.appointmentType === 'virtual' ? '🎥 Online Virtual Meeting' : '💬 Chat Consultation'}
             </p>
           </div>
           <div>
@@ -257,6 +258,20 @@ export const DoctorDashboard = () => {
               <Eye className="w-4 h-4 mr-1" />
               View Details
             </Button>
+            {appointment.appointmentType === 'virtual' && appointment.status === 'confirmed' && (
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => {
+                  const roomId = `appointment-${appointment._id}`;
+                  const meetingLink = `/meeting-room?roomID=${roomId}`;
+                  window.open(meetingLink, '_blank');
+                }}
+              >
+                <Video className="w-4 h-4 mr-1" />
+                Join Meeting
+              </Button>
+            )}
             {appointment.status === 'pending' && (
               <Button
                 size="sm"
@@ -417,7 +432,48 @@ export const DoctorDashboard = () => {
                     </p>
                   </div>
                 </div>
-              </div><div>
+              </div>
+
+              {/* Virtual Meeting Section for Doctor */}
+              {selectedAppointment.appointmentType === 'virtual' && selectedAppointment.status === 'confirmed' && (
+                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                  <h3 className="font-semibold text-green-900 dark:text-green-100 mb-3 flex items-center">
+                    <Video className="w-5 h-5 mr-2" />
+                    Virtual Meeting Access
+                  </h3>
+                  <div className="flex items-center space-x-3">
+                    <Button
+                      onClick={() => {
+                        const roomId = `appointment-${selectedAppointment._id}`;
+                        const meetingLink = `/meeting-room?roomID=${roomId}`;
+                        window.open(meetingLink, '_blank');
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      size="sm"
+                    >
+                      <Video className="w-4 h-4 mr-2" />
+                      Start Meeting
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        const roomId = `appointment-${selectedAppointment._id}`;
+                        const meetingLink = `${window.location.origin}/meeting-room?roomID=${roomId}`;
+                        navigator.clipboard.writeText(meetingLink);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="border-green-600 text-green-600 hover:bg-green-50"
+                    >
+                      Copy Patient Link
+                    </Button>
+                  </div>
+                  <p className="text-green-800 dark:text-green-200 text-sm mt-2">
+                    Share the patient link so they can join the same meeting room.
+                  </p>
+                </div>
+              )}
+
+              <div>
                 <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Medical Information</h3>
                 <div className="space-y-4">
                   <div>

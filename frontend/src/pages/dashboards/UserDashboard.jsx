@@ -586,6 +586,7 @@ export const UserDashboard = () => {
                 className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-slate-800 dark:text-white"
               >
                 <option value="online">Online Consultation</option>
+                <option value="virtual">Online Virtual Meeting</option>
                 <option value="in-person">In-Person Visit</option>
               </select>
             </div>

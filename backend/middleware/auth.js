@@ -28,3 +28,7 @@ export const adminOnly = (req, res, next) => {
   }
   next()
 }
+
+// Alternative function name for compatibility
+export const authenticateToken = auth
+export const authorizeRoles = requireRoles

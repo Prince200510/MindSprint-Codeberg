@@ -7,7 +7,7 @@ const appointmentSchema = new mongoose.Schema({
   patientPhone: String,
   doctor: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   doctorName: { type: String, required: true },
-  appointmentType: { type: String, enum: ['online', 'offline', 'chat'], required: true},
+  appointmentType: { type: String, enum: ['online', 'offline', 'chat', 'virtual'], required: true},
   appointmentDate: { type: Date, required: true },
   appointmentTime: { type: String, required: true },
   symptoms: String,
