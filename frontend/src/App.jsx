@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { NotificationProvider } from './context/NotificationContext.jsx'
+import { logEnvironment } from './config/api.js'
 import Landing from './pages/Landing.jsx'
 import { AuthPage } from './pages/Auth.jsx'
 import { UserDashboard } from './pages/dashboards/UserDashboard.jsx'
@@ -38,7 +39,12 @@ const Guard = ({children, roles}) => {
   return children
 }
 
-export const App = () => <ThemeProvider><AuthProvider><NotificationProvider><BrowserRouter>
+export const App = () => {
+  // Log environment configuration on app start
+  logEnvironment();
+  
+  return (
+    <ThemeProvider><AuthProvider><NotificationProvider><BrowserRouter>
   <Routes>
     <Route path='/' element={<Landing />} />
     <Route path='/auth' element={<AuthPage />} />
@@ -64,3 +70,5 @@ export const App = () => <ThemeProvider><AuthProvider><NotificationProvider><Bro
     <Route path='/analytics' element={<Guard roles={['user','doctor','admin']}><AnalyticsPage /></Guard>} />
   </Routes>
 </BrowserRouter></NotificationProvider></AuthProvider></ThemeProvider>
+  );
+}

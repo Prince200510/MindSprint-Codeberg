@@ -1,7 +1,11 @@
 // Environment configuration utility
 const getEnvironment = () => {
   // Check if we're running on Vercel (production)
-  if (window.location.hostname.includes('vercel.app')) {
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'production'
+  }
+  // Check if we're running on a production domain
+  if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
     return 'production'
   }
   // Check environment variables
@@ -9,7 +13,11 @@ const getEnvironment = () => {
 }
 
 const isProduction = () => {
-  return getEnvironment() === 'production' || window.location.hostname.includes('vercel.app')
+  if (typeof window !== 'undefined') {
+    return window.location.hostname.includes('vercel.app') || 
+           (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'))
+  }
+  return getEnvironment() === 'production'
 }
 
 const isDevelopment = () => {
@@ -80,15 +88,15 @@ export const createApiHeaders = (token = null, additionalHeaders = {}) => {
 
 // Development helpers
 export const logEnvironment = () => {
-  if (isDevelopment()) {
-    console.log('🔧 MediTrack Environment Configuration:')
-    console.log('  Environment:', API_CONFIG.ENVIRONMENT)
-    console.log('  API URL:', API_CONFIG.API_URL)
-    console.log('  Server URL:', API_CONFIG.SERVER_URL)
-    console.log('  Socket URL:', API_CONFIG.SOCKET_URL)
-    console.log('  Frontend URL:', API_CONFIG.FRONTEND_URL)
-    console.log('  Is Production:', API_CONFIG.IS_PRODUCTION)
-  }
+  console.log('🔧 MediTrack Environment Configuration:')
+  console.log('  Environment:', API_CONFIG.ENVIRONMENT)
+  console.log('  Hostname:', typeof window !== 'undefined' ? window.location.hostname : 'N/A')
+  console.log('  API URL:', API_CONFIG.API_URL)
+  console.log('  Server URL:', API_CONFIG.SERVER_URL)
+  console.log('  Socket URL:', API_CONFIG.SOCKET_URL)
+  console.log('  Frontend URL:', API_CONFIG.FRONTEND_URL)
+  console.log('  Is Production:', API_CONFIG.IS_PRODUCTION)
+  console.log('  VITE_NODE_ENV:', import.meta.env.VITE_NODE_ENV)
 }
 
 // Export individual components for backward compatibility
