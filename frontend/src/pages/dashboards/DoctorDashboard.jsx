@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Users,  Calendar,  Clock,  CheckCircle, AlertTriangle, User, Stethoscope, FileText, Star, Activity, Pill, Phone, Mail, MapPin, Edit3, Eye, MessageCircle, Video, UserCheck} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useNotifications } from '../../context/NotificationContext'
+import { API_CONFIG } from '../../config/api.js'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_BASE = API_CONFIG.API_URL
 
 const containerVariants = {
   hidden: { opacity: 0 },

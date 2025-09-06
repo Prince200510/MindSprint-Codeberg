@@ -9,8 +9,9 @@ import { Layout } from '../components/Layout.jsx'
 import { Modal } from '../components/Modal.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
+import { API_CONFIG } from '../config/api.js'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_BASE = API_CONFIG.API_URL
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
   {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext.jsx'
+import { API_CONFIG } from '../config/api.js'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ResponsiveContainer,  BarChart,  Bar,  XAxis,  YAxis,  Tooltip,  LineChart, Line, PieChart,  Pie,  Cell, AreaChart, Area, Legend, CartesianGrid} from 'recharts'
 import { TrendingUp,  Calendar,  Pill,  Target,  Clock, Award, AlertCircle, CheckCircle, Activity, BarChart3, PieChart as PieChartIcon, Zap, ArrowUp, ArrowDown, Minus, Users, Heart, Shield} from 'lucide-react'
@@ -134,7 +135,7 @@ export const AnalyticsPage = () => {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  const API_BASE = API_CONFIG.API_URL
 
   useEffect(() => {
     if (token) {

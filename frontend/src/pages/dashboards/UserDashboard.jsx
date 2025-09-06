@@ -8,6 +8,7 @@ import { Input } from '../../components/Input.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock, Bell, User, Phone, MapPin, CheckCircle2, X, LogOut, ChefHat, Stethoscope, Users} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { API_CONFIG } from '../../config/api.js'
 
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
@@ -68,9 +69,8 @@ export const UserDashboard = () => {
     const fetchPrescriptions = async () => {
       try {
         const token = localStorage.getItem('token')
-        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
         
-        const response = await fetch(`${API_BASE}/prescriptions`, {
+        const response = await fetch(`${API_CONFIG.API_URL}/prescriptions`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         
@@ -90,9 +90,8 @@ export const UserDashboard = () => {
     const fetchDoctors = async () => {
       try {
         const token = localStorage.getItem('token')
-        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
         
-        const response = await fetch(`${API_BASE}/appointments/doctors/available`, {
+        const response = await fetch(`${API_CONFIG.API_URL}/appointments/doctors/available`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         
@@ -198,9 +197,8 @@ export const UserDashboard = () => {
     setBookingAppointment(true)
     try {
       const token = localStorage.getItem('token')
-      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
       
-      const response = await fetch(`${API_BASE}/appointments/book`, {
+      const response = await fetch(`${API_CONFIG.API_URL}/appointments/book`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
