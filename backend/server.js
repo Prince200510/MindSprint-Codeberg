@@ -17,6 +17,13 @@ import chatRoutes from './routes/chatRoutes.js'
 import settingsRoutes from './routes/settingsRoutes.js'
 import appointmentRoutes from './routes/appointmentRoutes.js'
 import dietRoutes from './routes/dietRoutes.js'
+
+// routes import - maaz
+import userRouter from "./routes/users.routes.js";
+import groupRouter from "./routes/groups.routes.js";
+import postRouter from "./routes/posts.routes.js";
+import commentRouter from "./routes/comments.routes.js";
+
 import { notFound, errorHandler } from './middleware/error.js'
 import { auth } from './middleware/auth.js'
 import { Message } from './models/Message.js'
@@ -30,6 +37,8 @@ app.use(express.json({limit:'2mb'}))
 app.use(morgan('dev'))
 app.use(rateLimit({windowMs: 60_000, max: 120}))
 app.use('/uploads', express.static('uploads'))
+
+// Healthcare system routes
 app.use('/api/auth', authRoutes)
 app.use('/api/doctor', doctorRoutes)
 app.use('/api/admin', adminRoutes)
@@ -40,6 +49,13 @@ app.use('/api/chat', chatRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/appointments', appointmentRoutes)
 app.use('/api/diet', dietRoutes)
+
+// Social platform routes - maaz
+app.use("/api/users", userRouter);
+app.use("/api/groups", groupRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
+
 app.get('/api/me', auth, (req,res)=> res.json({id:req.user._id,name:req.user.name,role:req.user.role,doctorApproved:req.user.doctorApproved}))
 app.use(notFound)
 app.use(errorHandler)
