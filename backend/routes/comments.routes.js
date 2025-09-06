@@ -6,6 +6,7 @@ import {
   createComment,
   getPostCommentsByPostId,
   getUserComments,
+  deleteComment,
 } from "../controllers/comments.controller.js";
 import { fileUpload } from "../middleware/file-upload.middleware.js";
 import { verifyJwt } from "../middleware/check-auth.middleware.js";
@@ -29,5 +30,7 @@ router.post(
 router.get("/post/:postId", getPostCommentsByPostId);
 
 router.get("/user", getUserComments);
+
+router.delete("/:commentId", deleteComment);
 
 export default router;

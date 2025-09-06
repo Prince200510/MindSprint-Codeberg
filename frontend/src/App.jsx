@@ -55,6 +55,8 @@ export const App = () => <ThemeProvider><AuthProvider><NotificationProvider><Bro
     <Route path='/dashboard/user/schedule' element={<Guard roles={['user']}><Schedule /></Guard>} />
     <Route path='/dashboard/user/analytics' element={<Guard roles={['user']}><AnalyticsPage /></Guard>} />
     <Route path='/dashboard/user/settings' element={<Guard roles={['user']}><Settings /></Guard>} />
+    <Route path='/dashboard/doctor/settings' element={<Guard roles={['doctor']}><Settings /></Guard>} />
+    <Route path='/dashboard/admin/settings' element={<Guard roles={['admin']}><Settings /></Guard>} />
     <Route path='/dashboard/doctor/*' element={<Guard roles={['doctor']}><DoctorDashboard /></Guard>} />
     <Route path='/dashboard/admin/*' element={<Guard roles={['admin']}><AdminDashboard /></Guard>} />
     <Route path='/analytics' element={<Guard roles={['user','doctor','admin']}><AnalyticsPage /></Guard>} />

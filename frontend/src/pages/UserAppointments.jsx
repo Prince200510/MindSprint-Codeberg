@@ -331,11 +331,14 @@ export const UserAppointments = () => {
       </Layout><AnimatePresence>
         {viewModal && selectedAppointment && (
           <Modal
-            isOpen={viewModal}
+            open={viewModal}
             onClose={() => setViewModal(false)}
-            title={`Appointment with Dr. ${selectedAppointment.doctorName}`}
           >
-            <div className="space-y-4"><div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+                Appointment with Dr. {selectedAppointment.doctorName}
+              </h2>
+              <div className="space-y-4"><div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
                 <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Appointment Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -393,14 +396,18 @@ export const UserAppointments = () => {
                     </div>
                   )}
                 </div>
-              </div>{selectedAppointment.doctorNotes && (
+              </div>
+              
+              {selectedAppointment.doctorNotes && (
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Doctor's Notes</h3>
-                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
                     <p className="text-slate-900 dark:text-white">{selectedAppointment.doctorNotes}</p>
                   </div>
                 </div>
-              )}{selectedAppointment.prescription && selectedAppointment.prescription.length > 0 && (
+              )}
+              
+              {selectedAppointment.prescription && selectedAppointment.prescription.length > 0 ? (
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Prescription</h3>
                   <div className="space-y-2">
@@ -428,6 +435,30 @@ export const UserAppointments = () => {
                     ))}
                   </div>
                 </div>
+              ) : selectedAppointment.status === 'completed' ? (
+                <div>
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Prescription</h3>
+                  <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <p className="text-slate-600 dark:text-slate-400 italic text-center">
+                      No prescription provided by the doctor yet.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Additional Information Section */}
+              {selectedAppointment.status === 'completed' && !selectedAppointment.doctorNotes && !selectedAppointment.prescription && (
+                <div>
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Consultation Summary</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-slate-700 dark:text-slate-300 text-center">
+                      ✅ Consultation completed successfully
+                    </p>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm text-center mt-2">
+                      Doctor notes and prescription details will appear here when provided.
+                    </p>
+                  </div>
+                </div>
               )}
 
               <div className="flex justify-end">
@@ -437,6 +468,7 @@ export const UserAppointments = () => {
                 >
                   Close
                 </Button>
+              </div>
               </div>
             </div>
           </Modal>

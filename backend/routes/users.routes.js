@@ -18,10 +18,9 @@ const router = Router();
 // router.get("/:uid", getUserByUserId);
 
 router.get("/", getAllUsers);
-
 router.post(
   "/signup",
-  fileUpload.single("image"), // `image` is taken from request coming from FE (`Auth.jsx - authSubmitHandler() - else(signup-mode)`)
+  fileUpload.single("image"), 
   [
     check("username").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
@@ -31,9 +30,7 @@ router.post(
 );
 
 router.post("/login", loginUser);
-
 // router.use(verifyJwt);
-
 router.patch(
   "/update/username",
   [check("username").not().isEmpty()],
