@@ -15,7 +15,7 @@ const getAllGroups = async (req, res, next) => {
 
   let allGroups;
   try {
-    allGroups = await Group.find().exec();
+    allGroups = await Group.find().populate('posts').exec();
     console.log("log> allGroups :-");
     console.log(allGroups);
   } catch (err) {
@@ -141,7 +141,13 @@ const createGroup = async (req, res, next) => {
     session.startTransaction();
     result = await newGroup.save({ session });
     // console.log("log> result:-"); console.log(result);
+    
+    // Initialize createdGroups array if it doesn't exist
+    if (!user.createdGroups) {
+      user.createdGroups = [];
+    }
     user.createdGroups.push(newGroup);
+    
     result = await user.save({ session });
     // console.log("log> result:-"); console.log(result);
     result = await session.commitTransaction();

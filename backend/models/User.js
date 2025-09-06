@@ -79,28 +79,19 @@ const userSchema = new mongoose.Schema({
   },
   
   // Social platform fields
-  pfp: {
-    type: String, // cloudinary url
-    trim: true,
-  },
-  comments: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Comment",
-    },
-  ],
-  createdPosts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Post",
-    },
-  ],
-  createdGroups: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Group",
-    },
-  ],
+  pfp: { type: String, default: '' },
+  createdGroups: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Group'
+  }],
+  createdPosts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Post'
+  }],
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
+  }],
   
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
