@@ -359,45 +359,43 @@ export default function Landing() {
             </div>
             <div className="relative lg:block">
               <div className="relative w-full h-[600px] bg-gradient-to-br from-primary/10 via-primary/5 to-primary/15 dark:from-primary/20 dark:via-primary/10 dark:to-primary/25 rounded-3xl border border-primary/20 dark:border-primary/30 shadow-2xl overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center space-y-8">
-                    <div className="relative">
-                      <div className="w-48 h-48 mx-auto bg-gradient-to-b from-primary/30 to-primary/50 dark:from-primary/40 dark:to-primary/60 rounded-full flex items-end justify-center overflow-hidden shadow-2xl">
-                        <div className="w-32 h-40 bg-gradient-to-b from-primary/60 to-primary/80 dark:from-primary/70 dark:to-primary/90 rounded-t-full"></div>
+                <div className="absolute inset-4">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover rounded-2xl shadow-xl"
+                  >
+                    <source src="/MediTrack_Explainer_Video_Script.mp4" type="video/mp4" />
+                  </video>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 rounded-3xl"></div>
+                <div className="absolute bottom-8 left-8 right-8">
+                  <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20 dark:border-slate-700/50">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                        <Stethoscope className="w-6 h-6 text-white" />
                       </div>
-                      <div className="absolute top-16 left-1/2 transform -translate-x-1/2">
-                        <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-700">
-                          <Stethoscope className="w-8 h-8 text-white" />
-                        </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Experience MediTrack</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">See how we're transforming healthcare management</p>
                       </div>
-                    </div>
-
-                    <div className="relative">
-                      <div className="absolute -top-20 -left-16 w-12 h-12 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                        <span className="text-white text-xl">💊</span>
-                      </div>
-                      <div className="absolute -top-16 right-8 w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg animate-pulse delay-300">
-                        <span className="text-white text-lg">🏥</span>
-                      </div>
-                      <div className="absolute top-8 -right-12 w-14 h-14 bg-gradient-to-r from-red-400 to-red-600 rounded-full flex items-center justify-center shadow-lg animate-pulse delay-700">
-                        <span className="text-white text-xl">❤️</span>
-                      </div>
-                      <div className="absolute top-16 -left-8 w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-pulse delay-1000">
-                        <span className="text-white text-sm">📋</span>
-                      </div>
-                    </div>
-
-                    <div className="text-center space-y-4">
-                      <h3 className="text-2xl font-bold text-primary dark:text-primary/90">Dr. Sarah Johnson</h3>
-                      <p className="text-slate-600 dark:text-slate-400 font-medium">Chief Medical Officer</p>
-                      <div className="px-6 py-3 bg-white/80 dark:bg-slate-800/80 rounded-full border border-primary/20 dark:border-primary/30 backdrop-blur-sm">
-                        <p className="text-slate-700 dark:text-slate-300 text-sm font-medium">"MediTrack has revolutionized our patient care"</p>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">LIVE DEMO</span>
                       </div>
                     </div>
                   </div>
                 </div>
+                <div className="absolute top-6 right-6">
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full shadow-lg border border-white/20 dark:border-slate-700/50">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">HD</span>
+                  </div>
+                </div>
                 <div className="absolute top-8 left-8 w-4 h-4 bg-primary/20 dark:bg-primary/30 rounded-full animate-ping"></div>
-                <div className="absolute bottom-12 right-12 w-6 h-6 bg-primary/25 dark:bg-primary/35 rounded-full animate-ping delay-500"></div>
+                <div className="absolute bottom-32 right-12 w-6 h-6 bg-primary/25 dark:bg-primary/35 rounded-full animate-ping delay-500"></div>
                 <div className="absolute top-1/2 left-4 w-3 h-3 bg-primary/15 dark:bg-primary/25 rounded-full animate-ping delay-1000"></div>
               </div>
               <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-r from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/15 rounded-full blur-2xl animate-pulse" />
