@@ -6,17 +6,19 @@ import { Button } from '../components/Button.jsx'
 import { Input } from '../components/Input.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
-import { User,  Calendar,  Stethoscope,  Heart,  Pill, ChefHat, ShoppingCart, Target, AlertTriangle, Loader2, CheckCircle2, Coffee, UtensilsCrossed, Moon, Save, Download, FileText} from 'lucide-react'
+import { User,  Calendar,  Stethoscope,  Heart,  Pill, ChefHat, ShoppingCart, Target, AlertTriangle, Loader2, CheckCircle2, Coffee, UtensilsCrossed, Moon, Save, Download, FileText, Users, Edit3} from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const nav = [
-  { to: '/dashboard/user', label: 'Dashboard', icon: User },
-  { to: '/dashboard/user/doctors', label: 'Available Doctors', icon: Stethoscope },
-  { to: '/dashboard/user/appointments', label: 'My Appointments', icon: Calendar },
-  { to: '/dashboard/user/prescriptions', label: 'Prescriptions', icon: Heart },
-  { to: '/dashboard/user/medicines', label: 'Medicines', icon: Pill },
-  { to: '/dashboard/user/diet', label: 'AI Diet Plan', icon: ChefHat }
+  {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
+  {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
+  {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
+  {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat},
+  {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 
 const containerVariants = {

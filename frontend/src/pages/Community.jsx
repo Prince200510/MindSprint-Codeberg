@@ -8,17 +8,19 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Users, Plus, MessageCircle, Heart, Send, Search, Filter, 
   User, Clock, Image as ImageIcon, X, Edit3, Trash2, 
-  Stethoscope, Heart as HeartIcon, Calendar, Pill
+  Stethoscope, Heart as HeartIcon, Calendar, Pill,
+  ChefHat
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
   {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
   {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
-  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: HeartIcon},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
   {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
-  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: Users},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat},
   {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 

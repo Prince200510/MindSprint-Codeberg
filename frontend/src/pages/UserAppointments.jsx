@@ -7,17 +7,19 @@ import { Modal } from '../components/Modal.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
 import { useNavigate } from 'react-router-dom'
-import { User,  Calendar,  Clock,  CheckCircle, AlertTriangle, XCircle, Stethoscope, Phone, Mail, MapPin, Plus, RefreshCw, Video, MessageCircle, Star, IndianRupee, Heart, Pill, ChefHat} from 'lucide-react'
+import { User,  Calendar,  Clock,  CheckCircle, AlertTriangle, XCircle, Stethoscope, Phone, Mail, MapPin, Plus, RefreshCw, Video, MessageCircle, Star, IndianRupee, Heart, Pill, ChefHat, Edit3, Users} from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const nav = [
-  { to: '/dashboard/user', label: 'Dashboard', icon: User },
-  { to: '/dashboard/user/doctors', label: 'Available Doctors', icon: Stethoscope },
-  { to: '/dashboard/user/appointments', label: 'My Appointments', icon: Calendar },
-  { to: '/dashboard/user/prescriptions', label: 'Prescriptions', icon: Heart },
-  { to: '/dashboard/user/medicines', label: 'Medicines', icon: Pill },
-  { to: '/dashboard/user/diet', label: 'AI Diet Plan', icon: ChefHat }
+  {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
+  {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
+  {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
+  {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat},
+  {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 
 const containerVariants = {
