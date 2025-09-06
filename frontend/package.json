@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "vite --mode development --host",
+    "dev:local": "vite --mode development --host --port 5173",
+    "build": "vite build --mode production",
+    "build:dev": "vite build --mode development",
+    "preview": "vite preview --host --port 4173",
+    "preview:prod": "vite build --mode production && vite preview --host --port 4173"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

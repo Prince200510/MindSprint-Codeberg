@@ -4,10 +4,14 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "dev": "node --watch server.js",
+    "dev": "cross-env NODE_ENV=development node --watch server.js",
+    "dev:local": "cross-env NODE_ENV=development node --watch server.js",
     "start": "cross-env NODE_ENV=production node server.js",
+    "start:dev": "cross-env NODE_ENV=development node server.js",
+    "build": "echo 'No build step required for Node.js backend'",
     "create-admin": "node scripts/createAdmin.js",
-    "create-indian-doctors": "node scripts/createIndianDoctors.js"
+    "create-indian-doctors": "node scripts/createIndianDoctors.js",
+    "test": "echo 'No tests specified' && exit 0"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

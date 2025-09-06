@@ -1,8 +1,42 @@
 {
-  "rewrites": [
+  "version": 2,
+  "name": "meditrack-frontend",
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "headers": {
+        "cache-control": "max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
+      "headers": {
+        "cache-control": "max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_NODE_ENV": "production",
+    "VITE_API_URL": "https://mindsprint-backend-meditrack.onrender.com/api",
+    "VITE_SERVER_URL": "https://mindsprint-backend-meditrack.onrender.com",
+    "VITE_SOCKET_URL": "https://mindsprint-backend-meditrack.onrender.com"
+  },
+  "build": {
+    "env": {
+      "VITE_NODE_ENV": "production"
+    }
+  }
 }

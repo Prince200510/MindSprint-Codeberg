@@ -17,31 +17,52 @@ import chatRoutes from "./routes/chatRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import dietRoutes from "./routes/dietRoutes.js";
-
-// routes import - maaz
 import userRouter from "./routes/users.routes.js";
 import groupRouter from "./routes/groups.routes.js";
 import postRouter from "./routes/posts.routes.js";
 import commentRouter from "./routes/comments.routes.js";
-
 import journalRoutes from "./routes/journalRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
-
 import { notFound, errorHandler } from "./middleware/error.js";
 import { auth } from "./middleware/auth.js";
 import { Message } from "./models/Message.js";
 
 await connectDB();
-
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_URL || "*", credentials: true }));
+
+const allowedOrigins = [
+  'https://meditrack-mindsprint.vercel.app', 
+  'http://localhost:5173', 
+  'http://localhost:3000', 
+  'http://127.0.0.1:5173', 
+  'http://127.0.0.1:3000'  
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    if (process.env.CLIENT_URL === origin) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
+};
+
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan("dev"));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
 app.use("/uploads", express.static("uploads"));
-
-// Healthcare system routes
 app.use("/api/auth", authRoutes);
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/admin", adminRoutes);
@@ -54,8 +75,6 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/diet", dietRoutes);
 app.use("/api/journals", journalRoutes);
 app.use("/api/contact", contactRoutes);
-
-// Social platform routes - maaz
 app.use("/api/users", userRouter);
 app.use("/api/groups", groupRouter);
 app.use("/api/posts", postRouter);
@@ -74,7 +93,7 @@ app.use(errorHandler);
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: process.env.CLIENT_URL || "*" },
+  cors: corsOptions, 
 });
 
 io.on("connection", (socket) => {
