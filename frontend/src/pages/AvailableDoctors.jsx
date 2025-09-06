@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Layout } from '../components/Layout.jsx'
-import { Card } from '../components/Card.jsx'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Calendar, ChefHat, Edit3, GraduationCap, Heart, IndianRupee, Languages, Mail, MapPin, Phone, Pill, Star, Stethoscope, User, UserCheck, Users, Video } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/Button.jsx'
-import { Modal } from '../components/Modal.jsx'
+import { Card } from '../components/Card.jsx'
 import { Input } from '../components/Input.jsx'
+import { Layout } from '../components/Layout.jsx'
+import { Modal } from '../components/Modal.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
-import { useNavigate } from 'react-router-dom'
-import { User,  Mail,  Phone,  GraduationCap,  Star,  Clock,  MapPin, Calendar, MessageCircle, Video, UserCheck, IndianRupee, Stethoscope, Heart, Award, Languages, Pill, ChefHat} from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const nav = [
-  { to: '/dashboard/user', label: 'Dashboard', icon: User },
-  { to: '/dashboard/user/doctors', label: 'Available Doctors', icon: Stethoscope },
-  { to: '/dashboard/user/appointments', label: 'My Appointments', icon: Calendar },
-  { to: '/dashboard/user/prescriptions', label: 'Prescriptions', icon: Heart },
-  { to: '/dashboard/user/medicines', label: 'Medicines', icon: Pill },
-  { to: '/dashboard/user/diet', label: 'AI Diet Plan', icon: ChefHat }
+  {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
+  {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
+  {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
+  {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
+  {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat},
+  {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 
 const containerVariants = {

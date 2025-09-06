@@ -5,18 +5,20 @@ import { Button } from '../components/Button.jsx'
 import { Modal } from '../components/Modal.jsx'
 import { Input } from '../components/Input.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill,  Plus,  Clock,  Calendar,  AlertTriangle,  Edit3,  Trash2, Bell, CheckCircle2, Info, Timer, Loader2, User, Stethoscope, Heart, ChefHat} from 'lucide-react'
+import { Pill,  Plus,  Clock,  Calendar,  AlertTriangle,  Edit3,  Trash2, Bell, CheckCircle2, Info, Timer, Loader2, User, Stethoscope, Heart, ChefHat, Users} from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
 
 // Move nav array outside component to prevent re-renders
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
+  {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
   {to:'/dashboard/user/doctors', label:'Available Doctors', icon: Stethoscope},
   {to:'/dashboard/user/appointments', label:'My Appointments', icon: Calendar},
   {to:'/dashboard/user/prescriptions', label:'Prescriptions', icon: Heart},
   {to:'/dashboard/user/medicines', label:'Medicines', icon: Pill},
-  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat}
+  {to:'/dashboard/user/diet', label:'AI Diet Plan', icon: ChefHat},
+  {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 
 export const Prescriptions = () => {

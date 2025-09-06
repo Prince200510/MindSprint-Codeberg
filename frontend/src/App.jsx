@@ -17,6 +17,7 @@ import { AvailableDoctors } from './pages/AvailableDoctors.jsx'
 import { UserAppointments } from './pages/UserAppointments.jsx'
 import { Diet } from './pages/Diet.jsx'
 import { Community } from './pages/Community.jsx'
+import { Journal } from './pages/Journal.jsx'
 
 const Guard = ({children, roles}) => {
   const {user} = useAuth()
@@ -49,6 +50,7 @@ export const App = () => <ThemeProvider><AuthProvider><NotificationProvider><Bro
     <Route path='/dashboard/user/prescriptions' element={<Guard roles={['user']}><Prescriptions /></Guard>} />
     <Route path='/dashboard/user/medicines' element={<Guard roles={['user']}><Medicines /></Guard>} />
     <Route path='/dashboard/user/diet' element={<Guard roles={['user']}><Diet /></Guard>} />
+    <Route path='/dashboard/user/journal' element={<Guard roles={['user']}><Journal /></Guard>} />
     <Route path='/dashboard/user/community' element={<Guard roles={['user']}><Community /></Guard>} />
     <Route path='/dashboard/user/schedule' element={<Guard roles={['user']}><Schedule /></Guard>} />
     <Route path='/dashboard/user/analytics' element={<Guard roles={['user']}><AnalyticsPage /></Guard>} />
