@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { API_CONFIG } from '../config/api.js'
 
 const AuthContext = createContext()
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api' })
+const api = axios.create({ baseURL: API_CONFIG.API_URL })
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null)

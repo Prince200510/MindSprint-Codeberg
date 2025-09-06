@@ -8,7 +8,17 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
 import { User,  Calendar,  Stethoscope,  Heart,  Pill, ChefHat, ShoppingCart, Target, AlertTriangle, Loader2, CheckCircle2, Coffee, UtensilsCrossed, Moon, Save, Download, FileText, Users, Edit3} from 'lucide-react'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+import { useState, useEffect } from 'react';
+import { Card } from '../components/Card.jsx';
+import { Button } from '../components/Button.jsx';
+import { Input } from '../components/Input.jsx';
+import { Toaster, toast } from 'react-hot-toast';
+import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext.jsx';
+import { FaSpinner, FaUtensils, FaClock, FaInfoCircle, FaHeart } from 'react-icons/fa';
+import { API_CONFIG } from '../config/api.js';
+
+const API_BASE = API_CONFIG.API_URL
 
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
@@ -63,7 +73,7 @@ export const Diet = () => {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:5000/api/diet/mealplan', {
+      const response = await fetch(`${API_BASE}/diet/mealplan`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -107,7 +117,7 @@ export const Diet = () => {
   const fetchSavedPlans = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:5000/api/diet/saved', {
+      const response = await fetch(`${API_BASE}/diet/saved`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -129,7 +139,7 @@ export const Diet = () => {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:5000/api/diet/save', {
+      const response = await fetch(`${API_BASE}/diet/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
