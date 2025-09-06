@@ -197,7 +197,7 @@ export const UserAppointments = () => {
                 className="bg-green-600 hover:bg-green-700 text-white"
                 onClick={() => {
                   if (appointment.appointmentType === 'virtual') {
-                    // Generate meeting room link for virtual appointments
+
                     const roomId = `appointment-${appointment._id}`;
                     const meetingLink = `/meeting-room?roomID=${roomId}`;
                     window.open(meetingLink, '_blank');
