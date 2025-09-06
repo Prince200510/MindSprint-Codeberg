@@ -231,7 +231,8 @@ export const UserAppointments = () => {
           initial="hidden"
           animate="visible"
           className="space-y-6"
-        ><motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        >
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                 My Appointments
@@ -256,7 +257,9 @@ export const UserAppointments = () => {
                 Refresh
               </Button>
             </div>
-          </motion.div><motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="p-4">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
@@ -304,7 +307,9 @@ export const UserAppointments = () => {
                 </div>
               </div>
             </Card>
-          </motion.div>{loading ? (
+          </motion.div>
+
+          {loading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="animate-pulse">
@@ -340,7 +345,9 @@ export const UserAppointments = () => {
             </motion.div>
           )}
         </motion.div>
-      </Layout><AnimatePresence>
+      </Layout>
+
+      <AnimatePresence>
         {viewModal && selectedAppointment && (
           <Modal
             open={viewModal}
@@ -350,202 +357,204 @@ export const UserAppointments = () => {
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
                 Appointment with Dr. {selectedAppointment.doctorName}
               </h2>
-              <div className="space-y-4"><div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
-                <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Appointment Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Date & Time</label>
-                    <p className="text-slate-900 dark:text-white">
-                      {formatDate(selectedAppointment.appointmentDate)} at {selectedAppointment.appointmentTime}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Status</label>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(selectedAppointment.status)}`}>
-                      {selectedAppointment.status.charAt(0).toUpperCase() + selectedAppointment.status.slice(1)}
-                    </span>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Type</label>
-                    <p className="text-slate-900 dark:text-white capitalize">
-                      {selectedAppointment.appointmentType === 'online' ? 'Online Consultation' : 
-                       selectedAppointment.appointmentType === 'virtual' ? 'Online Virtual Meeting' :
-                       selectedAppointment.appointmentType === 'offline' ? 'In-Person Visit' : 'Chat Consultation'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Consultation Fee</label>
-                    <p className="text-slate-900 dark:text-white">₹{selectedAppointment.consultationFee}</p>
+              <div className="space-y-4">
+                <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Appointment Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Date & Time</label>
+                      <p className="text-slate-900 dark:text-white">
+                        {formatDate(selectedAppointment.appointmentDate)} at {selectedAppointment.appointmentTime}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Status</label>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(selectedAppointment.status)}`}>
+                        {selectedAppointment.status.charAt(0).toUpperCase() + selectedAppointment.status.slice(1)}
+                      </span>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Type</label>
+                      <p className="text-slate-900 dark:text-white capitalize">
+                        {selectedAppointment.appointmentType === 'online' ? 'Online Consultation' : 
+                         selectedAppointment.appointmentType === 'virtual' ? 'Online Virtual Meeting' :
+                         selectedAppointment.appointmentType === 'offline' ? 'In-Person Visit' : 'Chat Consultation'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Consultation Fee</label>
+                      <p className="text-slate-900 dark:text-white">₹{selectedAppointment.consultationFee}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {selectedAppointment.appointmentType === 'virtual' && selectedAppointment.status === 'confirmed' && (
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border border-green-200 dark:border-green-800">
-                  <h3 className="font-semibold text-green-900 dark:text-green-100 mb-4 flex items-center">
-                    <Video className="w-5 h-5 mr-2" />
-                    Virtual Meeting Information
-                  </h3>
+
+                {selectedAppointment.appointmentType === 'virtual' && selectedAppointment.status === 'confirmed' && (
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border border-green-200 dark:border-green-800">
+                    <h3 className="font-semibold text-green-900 dark:text-green-100 mb-4 flex items-center">
+                      <Video className="w-5 h-5 mr-2" />
+                      Virtual Meeting Information
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-green-700 dark:text-green-300">Meeting Time</label>
+                        <p className="text-green-900 dark:text-green-100 font-medium">
+                          {new Date(selectedAppointment.appointmentDate).toLocaleDateString()} at {selectedAppointment.appointmentTime}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-green-700 dark:text-green-300">Meeting Access</label>
+                        <p className="text-green-800 dark:text-green-200 text-sm mb-2">
+                          Meeting link will be available 15 minutes before your scheduled appointment time.
+                        </p>
+                        {true ? ( 
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              onClick={() => {
+                                const roomId = `appointment-${selectedAppointment._id}`;
+                                const meetingLink = `/meeting-room?roomID=${roomId}`;
+                                window.open(meetingLink, '_blank');
+                              }}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              size="sm"
+                            >
+                              <Video className="w-4 h-4 mr-2" />
+                              Join Virtual Meeting
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                const roomId = `appointment-${selectedAppointment._id}`;
+                                const meetingLink = `${window.location.origin}/meeting-room?roomID=${roomId}`;
+                                navigator.clipboard.writeText(meetingLink);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="border-green-600 text-green-600 hover:bg-green-50"
+                            >
+                              Copy Link
+                            </Button>
+                          </div>
+                        ) : (
+                          <p className="text-green-700 dark:text-green-300 text-sm italic">
+                            Meeting link will be generated by the doctor upon confirmation.
+                          </p>
+                        )}
+                      </div>
+                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mt-4">
+                        <h4 className="text-blue-900 dark:text-blue-100 font-medium text-sm mb-2">Meeting Guidelines:</h4>
+                        <ul className="text-blue-800 dark:text-blue-200 text-xs space-y-1">
+                          <li>• Please join 2-3 minutes before the scheduled time</li>
+                          <li>• Ensure you have a stable internet connection</li>
+                          <li>• Test your camera and microphone beforehand</li>
+                          <li>• Only patient and doctor can join this meeting</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Medical Information</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="text-sm font-medium text-green-700 dark:text-green-300">Meeting Time</label>
-                      <p className="text-green-900 dark:text-green-100 font-medium">
-                        {new Date(selectedAppointment.appointmentDate).toLocaleDateString()} at {selectedAppointment.appointmentTime}
-                      </p>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Symptoms</label>
+                      <p className="text-slate-900 dark:text-white">{selectedAppointment.symptoms || 'Not provided'}</p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-green-700 dark:text-green-300">Meeting Access</label>
-                      <p className="text-green-800 dark:text-green-200 text-sm mb-2">
-                        Meeting link will be available 15 minutes before your scheduled appointment time.
-                      </p>
-                      {true ? ( 
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            onClick={() => {
-                              const roomId = `appointment-${selectedAppointment._id}`;
-                              const meetingLink = `/meeting-room?roomID=${roomId}`;
-                              window.open(meetingLink, '_blank');
-                            }}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            size="sm"
-                          >
-                            <Video className="w-4 h-4 mr-2" />
-                            Join Virtual Meeting
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              const roomId = `appointment-${selectedAppointment._id}`;
-                              const meetingLink = `${window.location.origin}/meeting-room?roomID=${roomId}`;
-                              navigator.clipboard.writeText(meetingLink);
-                            }}
-                            variant="outline"
-                            size="sm"
-                            className="border-green-600 text-green-600 hover:bg-green-50"
-                          >
-                            Copy Link
-                          </Button>
+                    
+                    {selectedAppointment.currentMedication && selectedAppointment.currentMedication.length > 0 && (
+                      <div>
+                        <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Current Medications</label>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {selectedAppointment.currentMedication.map((med, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 text-sm rounded-full"
+                            >
+                              {med}
+                            </span>
+                          ))}
                         </div>
-                      ) : (
-                        <p className="text-green-700 dark:text-green-300 text-sm italic">
-                          Meeting link will be generated by the doctor upon confirmation.
-                        </p>
-                      )}
-                    </div>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mt-4">
-                      <h4 className="text-blue-900 dark:text-blue-100 font-medium text-sm mb-2">Meeting Guidelines:</h4>
-                      <ul className="text-blue-800 dark:text-blue-200 text-xs space-y-1">
-                        <li>• Please join 2-3 minutes before the scheduled time</li>
-                        <li>• Ensure you have a stable internet connection</li>
-                        <li>• Test your camera and microphone beforehand</li>
-                        <li>• Only patient and doctor can join this meeting</li>
-                      </ul>
-                    </div>
+                      </div>
+                    )}
+
+                    {selectedAppointment.medicalHistory && (
+                      <div>
+                        <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Medical History</label>
+                        <p className="text-slate-900 dark:text-white">{selectedAppointment.medicalHistory}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-
-              <div>
-                <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Medical Information</h3>
-                <div className="space-y-3">
+                
+                {selectedAppointment.doctorNotes && (
                   <div>
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Symptoms</label>
-                    <p className="text-slate-900 dark:text-white">{selectedAppointment.symptoms || 'Not provided'}</p>
-                  </div>
-                  
-                  {selectedAppointment.currentMedication && selectedAppointment.currentMedication.length > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Current Medications</label>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {selectedAppointment.currentMedication.map((med, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 text-sm rounded-full"
-                          >
-                            {med}
-                          </span>
-                        ))}
-                      </div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Doctor's Notes</h3>
+                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                      <p className="text-slate-900 dark:text-white">{selectedAppointment.doctorNotes}</p>
                     </div>
-                  )}
-
-                  {selectedAppointment.medicalHistory && (
-                    <div>
-                      <label className="text-sm font-medium text-slate-600 dark:text-slate-400">Medical History</label>
-                      <p className="text-slate-900 dark:text-white">{selectedAppointment.medicalHistory}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {selectedAppointment.doctorNotes && (
-                <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Doctor's Notes</h3>
-                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                    <p className="text-slate-900 dark:text-white">{selectedAppointment.doctorNotes}</p>
                   </div>
-                </div>
-              )}
-              
-              {selectedAppointment.prescription && selectedAppointment.prescription.length > 0 ? (
-                <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Prescription</h3>
-                  <div className="space-y-2">
-                    {selectedAppointment.prescription.map((med, index) => (
-                      <div key={index} className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                          <div>
-                            <span className="font-medium text-slate-600 dark:text-slate-400">Medicine:</span>
-                            <p className="text-slate-900 dark:text-white">{med.medicine}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-slate-600 dark:text-slate-400">Dosage:</span>
-                            <p className="text-slate-900 dark:text-white">{med.dosage}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-slate-600 dark:text-slate-400">Frequency:</span>
-                            <p className="text-slate-900 dark:text-white">{med.frequency}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-slate-600 dark:text-slate-400">Duration:</span>
-                            <p className="text-slate-900 dark:text-white">{med.duration}</p>
+                )}
+                
+                {selectedAppointment.prescription && selectedAppointment.prescription.length > 0 ? (
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Prescription</h3>
+                    <div className="space-y-2">
+                      {selectedAppointment.prescription.map((med, index) => (
+                        <div key={index} className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                            <div>
+                              <span className="font-medium text-slate-600 dark:text-slate-400">Medicine:</span>
+                              <p className="text-slate-900 dark:text-white">{med.medicine}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-slate-600 dark:text-slate-400">Dosage:</span>
+                              <p className="text-slate-900 dark:text-white">{med.dosage}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-slate-600 dark:text-slate-400">Frequency:</span>
+                              <p className="text-slate-900 dark:text-white">{med.frequency}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-slate-600 dark:text-slate-400">Duration:</span>
+                              <p className="text-slate-900 dark:text-white">{med.duration}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : selectedAppointment.status === 'completed' ? (
-                <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Prescription</h3>
-                  <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <p className="text-slate-600 dark:text-slate-400 italic text-center">
-                      No prescription provided by the doctor yet.
-                    </p>
+                ) : selectedAppointment.status === 'completed' ? (
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Prescription</h3>
+                    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+                      <p className="text-slate-600 dark:text-slate-400 italic text-center">
+                        No prescription provided by the doctor yet.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ) : null}
+                ) : null}
 
-              {selectedAppointment.status === 'completed' && !selectedAppointment.doctorNotes && !selectedAppointment.prescription && (
-                <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Consultation Summary</h3>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-slate-700 dark:text-slate-300 text-center">
-                      ✅ Consultation completed successfully
-                    </p>
-                    <p className="text-slate-600 dark:text-slate-400 text-sm text-center mt-2">
-                      Doctor notes and prescription details will appear here when provided.
-                    </p>
+                {selectedAppointment.status === 'completed' && !selectedAppointment.doctorNotes && !selectedAppointment.prescription && (
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Consultation Summary</h3>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <p className="text-slate-700 dark:text-slate-300 text-center">
+                        ✅ Consultation completed successfully
+                      </p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm text-center mt-2">
+                        Doctor notes and prescription details will appear here when provided.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  onClick={() => setViewModal(false)}
-                >
-                  Close
-                </Button>
-              </div>
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setViewModal(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
               </div>
             </div>
           </Modal>
