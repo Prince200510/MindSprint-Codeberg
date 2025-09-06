@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Stethoscope, Shield, Clock, Users, Star, ArrowRight, Menu, X, CheckCircle, Phone, Mail, MapPin, User, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_CONFIG } from '../config/api.js';
 
 const features = [
   {
@@ -131,7 +132,7 @@ export default function Landing() {
     console.log('Submitting contact form:', contactForm);
 
     try {
-      const response = await fetch('/api/contact/submit', {
+      const response = await fetch(`${API_CONFIG.API_URL}/contact/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
