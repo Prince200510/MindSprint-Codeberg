@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Layout } from '../components/Layout.jsx'
 import { Card } from '../components/Card.jsx'
@@ -7,16 +7,8 @@ import { Input } from '../components/Input.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
 import { User,  Calendar,  Stethoscope,  Heart,  Pill, ChefHat, ShoppingCart, Target, AlertTriangle, Loader2, CheckCircle2, Coffee, UtensilsCrossed, Moon, Save, Download, FileText, Users, Edit3} from 'lucide-react'
-
-import { useState, useEffect } from 'react';
-import { Card } from '../components/Card.jsx';
-import { Button } from '../components/Button.jsx';
-import { Input } from '../components/Input.jsx';
-import { Toaster, toast } from 'react-hot-toast';
-import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext.jsx';
-import { FaSpinner, FaUtensils, FaClock, FaInfoCircle, FaHeart } from 'react-icons/fa';
-import { API_CONFIG } from '../config/api.js';
+import { FaSpinner, FaUtensils, FaClock, FaInfoCircle, FaHeart } from 'react-icons/fa'
+import { API_CONFIG } from '../config/api.js'
 
 const API_BASE = API_CONFIG.API_URL
 
