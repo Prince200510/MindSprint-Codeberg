@@ -61,7 +61,7 @@ async function generateSupportMessageWithAI(analysis, journalText) {
 }
 
 async function analyzeText(text) {
-  const GEMINI_API_KEY = "AIzaSyBiIO4RIrlSA_jhEcI99YPCBRWkZhNxkyA"; // Replace with your actual Gemini API key
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // Replace with your actual Gemini API key
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
 
   const userQuery = `
