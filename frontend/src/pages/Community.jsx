@@ -25,7 +25,6 @@ const nav = [
   {to:'/dashboard/user/community', label:'Community', icon: Users}
 ]
 
-// PostCard component moved outside to prevent re-renders
 const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommentChange, handleCommentSubmit, user, expandedComments, toggleComments, handleCommentDelete }) => (
   <div>
     <Card className="mb-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
@@ -95,10 +94,8 @@ const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommen
           </div>
         </div>
 
-        {/* Comments section */}
         {expandedComments.has(post._id) && (
           <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-            {/* Existing comments */}
             {post.comments && post.comments.length > 0 && (
               <div className="space-y-3 mb-4">
                 {post.comments.slice().reverse().slice(0, 3).map((comment) => (
@@ -116,7 +113,6 @@ const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommen
                             {new Date(comment.createdAt).toLocaleString()}
                           </span>
                         </div>
-                        {/* Delete button - only show for comment author */}
                         {(comment.commenter?._id === user?._id || comment.commenter?.id === user?.id) && (
                           <Button
                             variant="ghost"
@@ -146,7 +142,6 @@ const PostCard = ({ post, likedPosts, handleLikePost, postComments, handleCommen
           </div>
         )}
 
-        {/* Comment input section */}
         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -202,15 +197,12 @@ export const Community = () => {
     content: '',
     image: null
   })
-  const [postComments, setPostComments] = useState({}) // Individual comments for each post
-  const [likedPosts, setLikedPosts] = useState(new Set()) // Track liked posts
-  const [expandedComments, setExpandedComments] = useState(new Set()) // Track which posts have expanded comments
+  const [postComments, setPostComments] = useState({}) 
+  const [likedPosts, setLikedPosts] = useState(new Set()) 
+  const [expandedComments, setExpandedComments] = useState(new Set()) 
 
   const API_BASE = API_CONFIG.API_URL
-
-  // Simple notification function
   const showNotification = (message, type = 'info') => {
-    // For now, use alert - can be enhanced later with proper toast notifications
     if (type === 'error') {
       alert(`Error: ${message}`)
     } else if (type === 'success') {
@@ -246,8 +238,7 @@ export const Community = () => {
         const data = await response.json()
         console.log('Fetched posts data:', data)
         setPosts(data.groupPosts || [])
-        
-        // Initialize liked posts based on user's likes
+    
         const userLikedPosts = new Set()
         if (data.groupPosts) {
           data.groupPosts.forEach(post => {
@@ -376,14 +367,12 @@ export const Community = () => {
 
       if (response.ok) {
         const data = await response.json()
-        // Update the posts list with new like count
         setPosts(prev => prev.map(post => 
           post._id === postId 
             ? { ...post, likes: data.likes, likedBy: data.post.likedBy }
             : post
         ))
         
-        // Update local liked state
         setLikedPosts(prev => {
           const newLiked = new Set(prev)
           if (data.liked) {
@@ -424,18 +413,15 @@ export const Community = () => {
 
       if (response.ok) {
         const data = await response.json()
-        // Update the posts list with new comment
         setPosts(prev => prev.map(post => 
           post._id === postId 
             ? { ...post, comments: [...(post.comments || []), data.creation.comment] }
             : post
         ))
         
-        // Clear the comment input for this post
         setPostComments(prev => ({ ...prev, [postId]: '' }))
         showNotification('Comment added successfully!', 'success')
         
-        // Refresh posts to get updated comment count
         if (selectedGroup) {
           fetchGroupPosts(selectedGroup._id)
         }
@@ -462,7 +448,6 @@ export const Community = () => {
       })
 
       if (response.ok) {
-        // Update the posts list by removing the deleted comment
         setPosts(prev => prev.map(post => 
           post._id === postId 
             ? { 
@@ -474,7 +459,6 @@ export const Community = () => {
         
         showNotification('Comment deleted successfully!', 'success')
         
-        // Refresh posts to get updated comment count
         if (selectedGroup) {
           fetchGroupPosts(selectedGroup._id)
         }
@@ -567,7 +551,6 @@ export const Community = () => {
   return (
     <Layout items={nav}>
       <div className="space-y-6">
-        {/* Header */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -602,7 +585,6 @@ export const Community = () => {
             </div>
           </div>
 
-          {/* Tab Navigation */}
           <div className="flex items-center space-x-1 bg-white dark:bg-slate-800 rounded-lg p-1">
             <button
               onClick={() => {
@@ -632,7 +614,6 @@ export const Community = () => {
           </div>
         </div>
 
-        {/* Search and Filter */}
         {activeTab === 'groups' && (
           <div className="flex items-center space-x-4">
             <div className="flex-1 relative">
@@ -646,8 +627,6 @@ export const Community = () => {
             </div>
           </div>
         )}
-
-        {/* Content */}
         <AnimatePresence mode="wait">
           {activeTab === 'groups' && (
             <motion.div
@@ -690,7 +669,6 @@ export const Community = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {/* Group Header */}
               <Card className="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200 dark:border-indigo-800">
                 <div className="p-6">
                   <div className="flex items-center justify-between">
@@ -730,7 +708,6 @@ export const Community = () => {
                 </div>
               </Card>
 
-              {/* Posts */}
               {posts.length > 0 ? (
                 <div>
                   {posts.map((post) => (
@@ -771,7 +748,6 @@ export const Community = () => {
           )}
         </AnimatePresence>
 
-        {/* Create Group Modal */}
         <Modal open={showCreateGroupModal} onClose={() => setShowCreateGroupModal(false)}>
           <div className="p-6 max-w-md mx-auto">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">
@@ -832,7 +808,6 @@ export const Community = () => {
           </div>
         </Modal>
 
-        {/* Create Post Modal */}
         <Modal open={showCreatePostModal} onClose={() => setShowCreatePostModal(false)}>
           <div className="p-6 max-w-md mx-auto">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">
