@@ -155,7 +155,33 @@ Our solution directly addresses this critical healthcare challenge by providing 
 
 ---
 
-## 🚀 **Installation & Setup**
+## � **Login Credentials**
+
+For testing purposes, you can use the following pre-configured accounts:
+
+### **Admin Access**
+
+- **Email:** admin@gmail.com
+- **Password:** admin
+- **Features:** User management, system analytics, content moderation
+
+### **Doctor Access**
+
+- **Email:** princemaurya887@gmail.com
+- **Password:** Prince@10
+- **Features:** Patient management, appointment scheduling, prescription creation
+
+### **Patient/User Access**
+
+- **Email:** prince.co10673@tpoly.in
+- **Password:** 1234567
+- **Features:** Health journal, appointment booking, medication tracking
+
+> **Note:** These are demo credentials for testing. In production, please create your own secure accounts.
+
+---
+
+## �🚀 **Installation & Setup**
 
 ### **Prerequisites**
 
@@ -354,8 +380,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Team Lead:** Prince Maurya  
 **Email:** prince@codeberg.team
 
-**Demo:** [Live Application](https://meditrack-demo.vercel.app)  
-**Documentation:** [API Docs](https://meditrack-api-docs.netlify.app)
+**Demo:** [Live Application](https://meditrack-mindsprint.vercel.app/)  
 
 ---
 
