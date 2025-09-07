@@ -379,7 +379,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Project Repository:** [MindSprint-Codeberg](https://github.com/Prince200510/MindSprint-Codeberg)
 
 **Team Lead:** Prince Maurya  
-**Email:** prince@codeberg.team
+**Email:** princemaurya8879@gmail.com
 
 **Demo:** [Live Application](https://meditrack-mindsprint.vercel.app/)  
 
