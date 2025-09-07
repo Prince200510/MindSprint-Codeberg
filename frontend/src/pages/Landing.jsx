@@ -3,6 +3,8 @@ import { ChevronDown, Stethoscope, Shield, Clock, Users, Star, ArrowRight, Menu,
 import { Link } from 'react-router-dom';
 import { API_CONFIG } from '../config/api.js';
 
+const API_BASE = API_CONFIG.API_URL
+
 const features = [
   {
     title: 'Smart OCR Technology',
@@ -132,7 +134,7 @@ export default function Landing() {
     console.log('Submitting contact form:', contactForm);
 
     try {
-      const response = await fetch(`${API_CONFIG.API_URL}/contact/submit`, {
+      const response = await fetch(`${API_BASE}/contact/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
