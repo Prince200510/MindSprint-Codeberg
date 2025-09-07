@@ -25,3 +25,11 @@ backend/.env
 *.njsproj
 *.sln
 *.sw?
+
+# Large media files
+*.mp4
+*.mov
+*.avi
+*.mkv
+frontend/public/*.mp4
+frontend/public/*.mov
