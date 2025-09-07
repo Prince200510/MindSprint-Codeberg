@@ -244,6 +244,7 @@ npm run dev
 ---
 
 ## 📸 **Screenshots & Demo**
+https://github.com/user-attachments/assets/a42acee8-3a35-4be5-a0c2-df68d6e9a2a0
 
 ### **Landing Page**
 
