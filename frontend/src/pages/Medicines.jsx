@@ -8,6 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Pill,  Plus,  Edit3,  Trash2, CheckCircle2, Loader2, Calendar, Clock, Info, User, Stethoscope, Heart, ChefHat, Users} from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
+import { API_CONFIG } from '../config/api.js'
+
+const API_BASE = API_CONFIG.API_URL
 
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
@@ -52,7 +55,7 @@ export const Medicines = () => {
       const token = localStorage.getItem('token')
       console.log('Fetching medicines with token:', token ? 'Token exists' : 'No token')
       
-      const response = await fetch('/api/medicines', {
+      const response = await fetch(`${API_BASE}/medicines`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       
@@ -207,7 +210,7 @@ export const Medicines = () => {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/medicines/${medicineId}`, {
+      const response = await fetch(`${API_BASE}/medicines/${medicineId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -244,7 +247,7 @@ export const Medicines = () => {
       }
 
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/medicines/${medicineId}`, {
+      const response = await fetch(`${API_BASE}/medicines/${medicineId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

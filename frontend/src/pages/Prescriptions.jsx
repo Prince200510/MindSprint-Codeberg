@@ -8,8 +8,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Pill,  Plus,  Clock,  Calendar,  AlertTriangle,  Edit3,  Trash2, Bell, CheckCircle2, Info, Timer, Loader2, User, Stethoscope, Heart, ChefHat, Users} from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useNotifications } from '../context/NotificationContext.jsx'
+import { API_CONFIG } from '../config/api.js'
 
-// Move nav array outside component to prevent re-renders
+const API_BASE = API_CONFIG.API_URL
+
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
   {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
@@ -69,7 +71,7 @@ export const Prescriptions = () => {
       const token = localStorage.getItem('token')
       console.log('Fetching prescriptions with token:', token ? 'Token exists' : 'No token')
       
-      const response = await fetch('/api/prescriptions', {
+      const response = await fetch(`${API_BASE}/prescriptions`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       
@@ -244,7 +246,7 @@ export const Prescriptions = () => {
     try {
       const token = localStorage.getItem('token')
       const isEditing = selectedPrescription && selectedPrescription.id
-      const url = isEditing ? `/api/prescriptions/${selectedPrescription.id}` : '/api/prescriptions'
+      const url = isEditing ? `${API_BASE}/prescriptions/${selectedPrescription.id}` : `${API_BASE}/prescriptions`
       const method = isEditing ? 'PUT' : 'POST'
       
       const requestData = {
@@ -386,7 +388,7 @@ export const Prescriptions = () => {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/prescriptions/${prescriptionId}`, {
+      const response = await fetch(`${API_BASE}/prescriptions/${prescriptionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -413,7 +415,7 @@ export const Prescriptions = () => {
   const handleUpdateDoseTiming = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/prescriptions/${selectedPrescription.id}/timing`, {
+      const response = await fetch(`${API_BASE}/prescriptions/${selectedPrescription.id}/timing`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -449,7 +451,7 @@ export const Prescriptions = () => {
       const token = localStorage.getItem('token')
       const prescription = prescriptions.find(p => p.id === prescriptionId || p._id === prescriptionId)
       
-      const response = await fetch(`/api/prescriptions/${prescriptionId}/dose-taken`, {
+      const response = await fetch(`${API_BASE}/prescriptions/${prescriptionId}/dose-taken`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

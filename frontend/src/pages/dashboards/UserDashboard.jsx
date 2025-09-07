@@ -10,6 +10,8 @@ import { Heart,  AlertTriangle,  Pill,  Calendar,  Edit3,  Trash2,  Plus,  Clock
 import { useAuth } from '../../context/AuthContext.jsx'
 import { API_CONFIG } from '../../config/api.js'
 
+const API_BASE = API_CONFIG.API_URL
+
 const nav = [
   {to:'/dashboard/user', label:'Overview', icon: User},
   {to:'/dashboard/user/journal', label:'Health Journal', icon: Edit3},
@@ -48,7 +50,7 @@ export const UserDashboard = () => {
     const fetchPatientData = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('/api/auth/profile', {
+        const response = await fetch(`${API_BASE}/auth/profile`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         
@@ -70,7 +72,7 @@ export const UserDashboard = () => {
       try {
         const token = localStorage.getItem('token')
         
-        const response = await fetch(`${API_CONFIG.API_URL}/prescriptions`, {
+        const response = await fetch(`${API_BASE}/prescriptions`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         
@@ -91,7 +93,7 @@ export const UserDashboard = () => {
       try {
         const token = localStorage.getItem('token')
         
-        const response = await fetch(`${API_CONFIG.API_URL}/appointments/doctors/available`, {
+        const response = await fetch(`${API_BASE}/appointments/doctors/available`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         
@@ -149,7 +151,7 @@ export const UserDashboard = () => {
         condition => condition !== conditionToRemove
       )
 
-      const response = await fetch('/api/auth/update-profile', {
+      const response = await fetch(`${API_BASE}/auth/update-profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +200,7 @@ export const UserDashboard = () => {
     try {
       const token = localStorage.getItem('token')
       
-      const response = await fetch(`${API_CONFIG.API_URL}/appointments/book`, {
+      const response = await fetch(`${API_BASE}/appointments/book`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
