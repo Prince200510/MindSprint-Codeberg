@@ -13,11 +13,12 @@
 
 ---
 
-## Admin:
-## email:- admin@gmail.com
-## pass:- admin
-<br/>
+### Admin:
+**email:** admin@gmail.com
+**pass:** admin
+
 <a href="https://drive.google.com/file/d/1GlHVPnjZlqkbDqd55rGdTt-D94fJDWzi/view?usp=sharing">Video Demo<a>
+
 ---
 
 ## 📋 **Project Overview**
