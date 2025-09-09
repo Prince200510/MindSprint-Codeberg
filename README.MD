@@ -13,6 +13,12 @@
 
 ---
 
+Admin:
+email:- admin@gmail.com
+pass:- admin
+<a href="https://drive.google.com/file/d/1GlHVPnjZlqkbDqd55rGdTt-D94fJDWzi/view?usp=sharing">Video Demo<a>
+---
+
 ## 📋 **Project Overview**
 
 MediTrack is a revolutionary healthcare management platform that bridges the gap between patients, doctors, and administrators through cutting-edge technology. Built in just 48 hours for the MindSprint International Hackathon, this comprehensive solution addresses critical healthcare challenges with innovative features.
